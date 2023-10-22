@@ -1,0 +1,1 @@
+clang++ -std=c++20 -o out/log-compiler src/main.cpp
