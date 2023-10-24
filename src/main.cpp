@@ -4,6 +4,7 @@
 
 #include "InputsParser.hpp"
 #include "Tokenizer.hpp"
+#include "Parser.hpp"
 
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
@@ -132,8 +133,11 @@ int main(int argc, const char** argv)
 
     // Actual Compilation
     auto fileStr = fileContent.str();
-    Tokenizer tokenizer(fileStr);
+    Tokenizer tokenizer(std::move(fileStr));
     std::vector<Token> tokens = tokenizer.Tokenize();
+
+    Parser parser(std::move(tokens));
+    //auto program = parser.ParseProgram();
     
     // Some debug info
     if(CompilerOptions::DebugMode && CompilerOptions::Verbose)

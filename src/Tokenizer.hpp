@@ -20,8 +20,8 @@ struct Token
 class Tokenizer
 {
 public:
-    Tokenizer(const std::string& source) 
-        : m_source(source)
+    Tokenizer(std::string source) 
+        : m_source(std::move(source))
         , m_currentIndex(0) 
     {}
 
