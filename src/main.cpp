@@ -26,6 +26,15 @@ const char* TokenTypeToCstr(TokenType tokenType)
     }
 }
 
+static const char* ShortCLIUsageStr = "Usage :";
+static const char* CompleteCLIUsageStr = R"(Usage :
+    - `-i` or `--input`: Specifies the input log file to be compiled.
+    - `-o` or `--output`: Specifies the output file path (optional, default=./a.{extention}).
+    - `--format`: Specifies the output format as `JSON`, `Markdown` or `C + RayGui` format : `[json|(markdown|md)|c]` (optional, default=json).
+    - `--verbose`: Enables verbose mode for detailed output (optional).
+    - `--debug`: Enables debug mode for debugging information (optional).
+    - `--help`: display this message then exit.
+)";
 
 void StdOutInputFileInfo(const std::string_view& inputFilePath, const std::stringstream& fileContent)
 {
@@ -40,8 +49,11 @@ void StdOutTokens(const std::vector<Token>& tokens)
     for(auto token : tokens)
     {
         std::cout 
-            << "    { Type : `" << TokenTypeToCstr(token.type) << '`'
-            << ", Value : `" << token.value << '`' << " }" 
+            << "    { "
+            << "Type : `" << TokenTypeToCstr(token.type) << '`'
+            << ", Value : `" << token.value << '`' 
+            << ", pos: " << token.ln << ':' << token.col
+            << " }" 
             << std::endl;
     }
 }
@@ -53,9 +65,15 @@ int main(int argc, const char** argv)
     {
         InputParser inputParser(argc, argv);
 
+        if(inputParser.CmdOptionExists("--help") || inputParser.CmdOptionExists("-h"))
+        {
+            std::cout << CompleteCLIUsageStr << std::endl;
+            return EXIT_SUCCESS;
+        }
+
         if(!inputParser.CmdOptionExists("--input") && !inputParser.CmdOptionExists("-i"))
         {
-            std::cerr << "ERROR : No input file provided !" << std::endl;
+            std::cerr << "ERROR : No input file provided !\n" << ShortCLIUsageStr << std::endl;
             return EXIT_FAILURE;
         }
 
@@ -73,6 +91,14 @@ int main(int argc, const char** argv)
                 CompilerOptions::OutputFormat = CompilerOptions::OutputFormats::Markdown;
             else if(format == "c")
                 CompilerOptions::OutputFormat = CompilerOptions::OutputFormats::C;
+            else
+            {
+                std::cerr 
+                    << "ERROR : invalid --format `" << format << "` is not a valid format. "
+                    << "Accepted formats are [json|(markdown|md)|c]\n"
+                    << ShortCLIUsageStr << std::endl;
+                return EXIT_FAILURE;
+            }
         }
 
         if(inputParser.CmdOptionExists("--debug"))

@@ -3,9 +3,9 @@
 > Imagine a world with no limits and endless possibilities. In this marvelous world, it must have a Markdown compiler, right?... right? <br>
 > Yes, I know what you're thinking: what kind of application could such a strange "compiler" have? <br>
 > It doesn't have any real-world application, this is just a fun project I created to dive into the world of compiler development.<br>
-> Don't take this project too seriously, it's intended for educational purposes. If the idea of a Markdown compiler offends you and you have a strong desire to tear your eyes out at the thought that Markdown can have some kind of runtime directly on your os, it's normal stay calm and relax.
+> Don't take this project too seriously, it's intended for educational purposes. If the idea of a Markdown compiler offends you and you have a strong desire to tear your eyes out at the thought that Markdown can have some kind of runtime directly on your OS, it's normal. Stay calm and relax.
 
-The Log Compiler is a tool designed to compile log files written in a specific Markdown-like format into structured data formats, such as `JSON` or Markdown. It can also be used to create `C` + `RayGui` code. So technically, your Markdown file can be compiled and have a runtime. How cool is that ?
+The Log Compiler is a tool designed to compile log files written in a specific Markdown-like format into structured data formats, such as `JSON` or Markdown. It can also be used to create `C` + `RayGui` code. So technically, your Markdown file can be compiled and have a runtime. How cool is that?
 
 ## Purpose
 
@@ -23,12 +23,12 @@ The Log Compiler accepts the following command-line arguments:
 
 - `-i` or `--input`: Specifies the input log file to be compiled.
 - `-o` or `--output`: Specifies the output file path (optional, default=./a.{extention}).
-- `--format`: Specifies the output format (e.g., JSON or Markdown, C+RayGui) (optional, default=json).
+- `--format`: Specifies the output format as `JSON`, `Markdown` or `C + RayGui` format : `[json|(markdown|md)|c]` (optional, default=json).
 - `--verbose`: Enables verbose mode for detailed output (optional).
 - `--debug`: Enables debug mode for debugging information (optional).
+- `--help`: Display help about the `log-compiler` command.
 
-
-## Example Input File
+## Exemple Input File
 
 ```markdown
 # Section 1
@@ -145,14 +145,15 @@ Here's the grammar of the input file format recognized by the Log Compiler in PE
 
 ```peg
 InputFile       <- Entry*
-Entry           <- TitleSection / Blockquote / Line
+Entry           <- TitleSection / Blockquote / Line / EmptyLine
 TitleSection    <- TitleLevel Text
 TitleLevel      <- "#" ("#" / "#" / "#" / "#" / "#" / "#")?
 Blockquote      <- BlockquoteLine+
 BlockquoteLine  <- ">" Line
 Line            <- (!EndLine .)* EndLine
 Text            <- (!EndLine .)+
-EndLine         <- "\n"
+EmptyLine       <- (" " / "\n" / "\r" / "\t")*
+EndLine         <- "\n" / "\r" / "\r\n"
 ```
 
 In this PEG-based grammar:
@@ -162,6 +163,7 @@ In this PEG-based grammar:
   - `TitleSection`: A section with a title.
   - `Blockquote`: A section with zones.
   - `Line`: A plain line of text.
+- `EmptyLine`: A line containing only spaces, tabs, newlines, or carriage returns.
 - `TitleSection`:
   - Begins with a `TitleLevel` that represents the section's level (up to six `#` symbols).
   - Followed by `Text` containing the section's title.
@@ -173,6 +175,8 @@ In this PEG-based grammar:
   - Represents plain lines of text without special markers.
 - `Text`:
   - Represents any character sequence excluding newline characters.
+- `EndLine`:
+  - Represents the end of a line, which can be `\n`, `\r`, or `\r\n`.
 
 For now, the grammar only contains `plain text`, `titles`, and `blockquotes` from Markdown, but I plan to add other Markdown syntax in the future.
 

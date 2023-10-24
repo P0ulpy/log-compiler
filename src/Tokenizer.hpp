@@ -3,7 +3,7 @@
 
 enum class TokenType
 {
-    EmptyLine,          // An empty line containing only `\s` `\n` or `\r`
+    EmptyLine,          // An empty line containing only one or more `\s`, `\n` or `\r` characters
     TextLine,           // A not empty line not Tokenized as an other token
     TextLiteral,        // Any sequence of characters except end of line
     TitleSymbol,        // `#{1,6}` usually followed by the name of the note as a `TextLiteral` (exemple : `# My super duper note`)
@@ -14,9 +14,10 @@ struct Token
 {
     TokenType type;
     std::string value;
+    uint32_t ln = 0, col = 0;
 };
 
-class Tokenizer 
+class Tokenizer
 {
 public:
     Tokenizer(const std::string& source) 
@@ -31,7 +32,7 @@ public:
             return false;
         }
 
-        size_t lineEndIndex = FindEndOfLineIndex(m_currentIndex);
+        size_t lineEndIndex = FindEndOfLine(m_currentIndex).index;
 
         if (lineEndIndex != std::string::npos)
         {
@@ -48,11 +49,11 @@ public:
 
     void Consume() 
     {
-        size_t lineEnd = m_source.find('\n', m_currentIndex);
+        auto endOfLineInfo = FindEndOfLine(m_currentIndex);
         
-        if (lineEnd != std::string::npos)
+        if (endOfLineInfo.index != std::string::npos)
         {
-            m_currentIndex = lineEnd + 1;
+            m_currentIndex = endOfLineInfo.index + endOfLineInfo.terminatorOffset;
         } 
         else 
         {
@@ -63,23 +64,27 @@ public:
     std::vector<Token> Tokenize() 
     {
         std::vector<Token> tokens;
-
+        
         std::string line;
-        while (TryPeek(line)) 
+        uint32_t lineIndex = 1;
+        
+        while (TryPeek(line))
         {
             const static std::regex TitleRgx { "(#{1,6}) (.*)" };
-            const static std::regex BlockquoteRgx { ">{1} (.*)" };
+            const static std::regex BlockquoteRgx { "(>{1} )(.*)" };
             // Note : Maybe check for a more efficient regex
             const static std::regex NotEmptyLineRgx { "(?!( {1,}|\n{1,}|\r{1,}|$))" };
 
             std::smatch match;
 
-            if(!std::regex_search(line, NotEmptyLineRgx))
+            if(line.size() == 0 || !std::regex_search(line, NotEmptyLineRgx))
             {
                 Consume();
 
                 tokens.push_back({
-                    TokenType::EmptyLine
+                    .type = TokenType::EmptyLine,
+                    .ln = lineIndex,
+                    .col = 1U,
                 });
             }
             else if (std::regex_match(line, match, BlockquoteRgx))
@@ -87,8 +92,10 @@ public:
                 Consume();
 
                 tokens.push_back({
-                    TokenType::QuoteLine,
-                    match[1]
+                    .type = TokenType::QuoteLine,
+                    .value = match[2],
+                    .ln = lineIndex,
+                    .col = static_cast<uint32_t>(match.position(2)) + 1,
                 });
             }
             else if (std::regex_match(line, match, TitleRgx))
@@ -96,13 +103,17 @@ public:
                 Consume();
 
                 tokens.push_back({
-                    TokenType::TitleSymbol,
-                    match[1]
+                    .type = TokenType::TitleSymbol,
+                    .value = match[1],
+                    .ln = lineIndex,
+                    .col = static_cast<uint32_t>(match.position(1)) + 1,
                 });
 
                 tokens.push_back({
-                    TokenType::TextLiteral,
-                    match[2]
+                    .type = TokenType::TextLiteral,
+                    .value = match[2],
+                    .ln = lineIndex,
+                    .col = static_cast<uint32_t>(match.position(2)) + 1,
                 });
             }
             else
@@ -110,10 +121,14 @@ public:
                 Consume();
 
                 tokens.push_back({
-                    TokenType::TextLiteral,
-                    line
+                    .type = TokenType::TextLiteral,
+                    .value = line,
+                    .ln = lineIndex,
+                    .col = 0U,
                 });
             }
+
+            ++lineIndex;
         }
 
         return tokens;
@@ -121,7 +136,8 @@ public:
 
 private:
 
-    size_t FindEndOfLineIndex(size_t startPos = 0) const
+    struct EndOfLineInfo { size_t index = 0; uint8_t terminatorOffset = 0; };
+    EndOfLineInfo FindEndOfLine(size_t startPos = 0) const
     {
         size_t length = m_source.length();
         
@@ -130,10 +146,15 @@ private:
             char character = m_source[i];
 
             if (character == '\n' || character == '\r') 
-                return i;
+            {
+                if (character == '\r' && (i + 1 < length) && m_source[i + 1] == '\n')
+                    return { i, 2 };
+                else
+                    return { i, 1 };
+            }
         }
-        
-        return std::string::npos;
+
+        return { std::string::npos, 0 };
     }
 
     const std::string& m_source;
