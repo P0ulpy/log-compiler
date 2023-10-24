@@ -3,9 +3,11 @@
 
 enum class TokenType
 {
-    TextLine,           // A line not Tokenized as an other token (excluding empty line)
+    EmptyLine,          // An empty line containing only `\s` `\n` or `\r`
+    TextLine,           // A not empty line not Tokenized as an other token
     TextLiteral,        // Any sequence of characters except end of line
     TitleSymbol,        // `#{1,6}` usually followed by the name of the note as a `TextLiteral` (exemple : `# My super duper note`)
+    QuoteLine,          // `> ` followed by the content of the QuoteLine (exemple : `> My super duper quoteblock line`)
 };
 
 struct Token
@@ -66,6 +68,7 @@ public:
         while (TryPeek(line)) 
         {
             const static std::regex TitleRgx { "(#{1,6}) (.*)" };
+            const static std::regex BlockquoteRgx { ">{1} (.*)" };
             // Note : Maybe check for a more efficient regex
             const static std::regex NotEmptyLineRgx { "(?!( {1,}|\n{1,}|\r{1,}|$))" };
 
@@ -74,6 +77,19 @@ public:
             if(!std::regex_search(line, NotEmptyLineRgx))
             {
                 Consume();
+
+                tokens.push_back({
+                    TokenType::EmptyLine
+                });
+            }
+            else if (std::regex_match(line, match, BlockquoteRgx))
+            {
+                Consume();
+
+                tokens.push_back({
+                    TokenType::QuoteLine,
+                    match[1]
+                });
             }
             else if (std::regex_match(line, match, TitleRgx))
             {

@@ -18,9 +18,11 @@ const char* TokenTypeToCstr(TokenType tokenType)
 {
     switch(tokenType)
     {
+        case TokenType::EmptyLine :         return "EmptyLine";
         case TokenType::TextLine :          return "TextLine";
         case TokenType::TextLiteral :       return "TextLiteral";
         case TokenType::TitleSymbol :       return "TitleSymbol";
+        case TokenType::QuoteLine :         return "QuoteLine";
     }
 }
 
