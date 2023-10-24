@@ -3,9 +3,9 @@
 
 enum class TokenType
 {
-    TextLiteral,        // Any chunk of text not Tokenized as an other token
-    TitleSymbol,        // `# ` usually followed by the name of the note as a `TextLiteral` (exemple : `# My super duper note`)
-    SubTitleSymbol      // `## ` followed by the name of the sub-title (exemple : `## My super sub title`)
+    TextLine,           // A line not Tokenized as an other token (excluding empty line)
+    TextLiteral,        // Any sequence of characters except end of line
+    TitleSymbol,        // `#{1,6}` usually followed by the name of the note as a `TextLiteral` (exemple : `# My super duper note`)
 };
 
 struct Token
@@ -29,16 +29,15 @@ public:
             return false;
         }
 
-        // TODO : Make this cross format (accept '\n' '\r' '\n\r')
-        size_t lineEnd = m_source.find('\n', m_currentIndex);
-     
-        if (lineEnd != std::string::npos) 
+        size_t lineEndIndex = FindEndOfLineIndex(m_currentIndex);
+
+        if (lineEndIndex != std::string::npos)
         {
-            line = m_source.substr(m_currentIndex, lineEnd - m_currentIndex);
-        } 
+            line = m_source.substr(m_currentIndex, lineEndIndex - m_currentIndex);
+        }
         else 
         {
-            // This handles the last line (no more '\n')
+            // This handles the last line
             line = m_source.substr(m_currentIndex);
         }
 
@@ -66,48 +65,59 @@ public:
         std::string line;
         while (TryPeek(line)) 
         {
-            Token token = MatchPattern(line);
-            tokens.push_back(token);
+            const static std::regex TitleRgx { "(#{1,6}) (.*)" };
+            // Note : Maybe check for a more efficient regex
+            const static std::regex NotEmptyLineRgx { "(?!( {1,}|\n{1,}|\r{1,}|$))" };
+
+            std::smatch match;
+
+            if(!std::regex_search(line, NotEmptyLineRgx))
+            {
+                Consume();
+            }
+            else if (std::regex_match(line, match, TitleRgx))
+            {
+                Consume();
+
+                tokens.push_back({
+                    TokenType::TitleSymbol,
+                    match[1]
+                });
+
+                tokens.push_back({
+                    TokenType::TextLiteral,
+                    match[2]
+                });
+            }
+            else
+            {
+                Consume();
+
+                tokens.push_back({
+                    TokenType::TextLiteral,
+                    line
+                });
+            }
         }
 
         return tokens;
     }
 
 private:
-    Token MatchPattern(const std::string& line) 
+
+    size_t FindEndOfLineIndex(size_t startPos = 0) const
     {
-        const static std::regex TitleSymbolRgx                  { "^#\\s(.*)" };
-        const static std::regex SubTitleSymbolRgx               { "^##\\s(.*)" };
-
-        std::smatch match;
-
-        if (std::regex_match(line, match, TitleSymbolRgx)) 
+        size_t length = m_source.length();
+        
+        for (size_t i = startPos; i < length; ++i) 
         {
-            Consume();
+            char character = m_source[i];
 
-            return { 
-                TokenType::TitleSymbol,
-                match[1] 
-            };
-        } 
-        else if (std::regex_match(line, match, SubTitleSymbolRgx)) 
-        {
-            Consume();
-
-            return {
-                TokenType::SubTitleSymbol,
-                match[1]
-            };
-        } 
-        else 
-        {
-            Consume();
-
-            return { 
-                TokenType::TextLiteral,
-                line 
-            };
+            if (character == '\n' || character == '\r') 
+                return i;
         }
+        
+        return std::string::npos;
     }
 
     const std::string& m_source;
