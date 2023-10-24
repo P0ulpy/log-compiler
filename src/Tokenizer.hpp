@@ -121,10 +121,10 @@ public:
                 Consume();
 
                 tokens.push_back({
-                    .type = TokenType::TextLiteral,
+                    .type = TokenType::TextLine,
                     .value = line,
                     .ln = lineIndex,
-                    .col = 0U,
+                    .col = 1U,
                 });
             }
 
