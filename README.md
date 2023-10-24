@@ -27,6 +27,7 @@ The Log Compiler accepts the following command-line arguments:
 - `--verbose`: Enables verbose mode for detailed output (optional).
 - `--debug`: Enables debug mode for debugging information (optional).
 - `--help`: Display help about the `log-compiler` command.
+- `--version`: display compiler version.
 
 ## Exemple Input File
 

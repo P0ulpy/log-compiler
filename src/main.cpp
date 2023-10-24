@@ -5,6 +5,11 @@
 #include "InputsParser.hpp"
 #include "Tokenizer.hpp"
 
+#define VERSION_MAJOR 0
+#define VERSION_MINOR 1
+#define VERSION_PATCH 0
+#define VERSION_TYPE "alpha"
+
 namespace CompilerOptions
 {
     static bool DebugMode = false;
@@ -33,7 +38,8 @@ static const char* CompleteCLIUsageStr = R"(Usage :
     - `--format`: Specifies the output format as `JSON`, `Markdown` or `C + RayGui` format : `[json|(markdown|md)|c]` (optional, default=json).
     - `--verbose`: Enables verbose mode for detailed output (optional).
     - `--debug`: Enables debug mode for debugging information (optional).
-    - `--help`: display this message then exit.
+    - `--help`: display this message, then exit.
+    - `--version`: display compiler version, then exit.
 )";
 
 void StdOutInputFileInfo(const std::string_view& inputFilePath, const std::stringstream& fileContent)
@@ -68,6 +74,12 @@ int main(int argc, const char** argv)
         if(inputParser.CmdOptionExists("--help") || inputParser.CmdOptionExists("-h"))
         {
             std::cout << CompleteCLIUsageStr << std::endl;
+            return EXIT_SUCCESS;
+        }
+
+        if(inputParser.CmdOptionExists("--version") || inputParser.CmdOptionExists("-v"))
+        {
+            std::cout << "LogCompiler " << 'v' << VERSION_MAJOR << '.' << VERSION_MINOR << '.' << VERSION_PATCH << '-' << VERSION_TYPE << std::endl;
             return EXIT_SUCCESS;
         }
 
