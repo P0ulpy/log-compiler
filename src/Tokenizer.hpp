@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include <regex>
 
@@ -20,8 +22,8 @@ struct Token
 class Tokenizer
 {
 public:
-    Tokenizer(std::string source) 
-        : m_source(std::move(source))
+    Tokenizer(const std::string& source) 
+        : m_source(source)
         , m_currentIndex(0) 
     {}
 

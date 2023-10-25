@@ -133,15 +133,15 @@ int main(int argc, const char** argv)
 
     // Actual Compilation
     auto fileStr = fileContent.str();
-    Tokenizer tokenizer(std::move(fileStr));
+    Tokenizer tokenizer(fileStr);
     std::vector<Token> tokens = tokenizer.Tokenize();
 
-    Parser parser(std::move(tokens));
-    //auto program = parser.ParseProgram();
-    
     // Some debug info
     if(CompilerOptions::DebugMode && CompilerOptions::Verbose)
         StdOutTokens(tokens);
 
+    Parser parser(tokens);
+    auto program = parser.ParseProgram();
+    
     return EXIT_SUCCESS;
 }

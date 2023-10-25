@@ -27,7 +27,7 @@ The Log Compiler accepts the following command-line arguments:
 - `--format`: Specifies the output format as `JSON`, `Markdown` or `C + RayGui` format : `[json|(markdown|md)|c]` (optional, default=json).
 - `--verbose`: Enables verbose mode for detailed output (optional).
 - `--debug`: Enables debug mode for debugging information (optional).
-- `--version`: display compiler version.
+- `-v` or `--version`: display compiler version.
 
 ## Exemple Input File
 
