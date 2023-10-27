@@ -21,13 +21,18 @@ For more information on how to use the Log Compiler, refer to the project's docu
 
 The Log Compiler accepts the following command-line arguments:
 
-- `-h` or `--help`: Display help about the `log-compiler` command.
-- `-i` or `--input`: Specifies the input log file to be compiled.
-- `-o` or `--output`: Specifies the output file path (optional, default=./a.{extention}).
-- `--format`: Specifies the output format as `JSON`, `Markdown` or `C + RayGui` format : `[json|(markdown|md)|c]` (optional, default=json).
-- `--verbose`: Enables verbose mode for detailed output (optional).
-- `--debug`: Enables debug mode for debugging information (optional).
-- `-v` or `--version`: display compiler version.
+**Usage :** `Usage : log-compiler InputFile [-o outputFile] [--format json|(markdown|md)|c] [--verbose] [--debug] [-v] [-h]`
+
+**Positional arguments:**
+- `InputFile`         : Specifies the input log file to be compiled.
+
+**Optional arguments:**
+- `-o`, `--output`    : Specifies the output file path (default=./a.{format}).
+- `--format`          : Specifies the output format as `JSON`, `Markdown` or `C + RayGui` format : `[json|(markdown|md)|c]` (default=json).
+- `--verbose`         : Enables verbose mode for detailed output.
+- `--debug`           : Enables debug mode for debugging information.
+- `-v`, `--version`   : display compiler version, then exit.
+- `-h`, `--help`      : display this message, then exit.
 
 ## Exemple Input File
 

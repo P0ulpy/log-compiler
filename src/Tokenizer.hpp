@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <regex>
+#include <optional>
 
 enum class TokenType
 {
@@ -22,12 +23,81 @@ struct Token
 class Tokenizer
 {
 public:
-    Tokenizer(const std::string& source) 
-        : m_source(source)
-        , m_currentIndex(0) 
+    Tokenizer() = delete;
+
+    Tokenizer(std::string source) 
+        : m_source(std::move(source))
     {}
 
-    bool TryPeek(std::string& line) 
+    std::vector<Token> Tokenize() 
+    {
+        std::vector<Token> tokens;
+        
+        uint32_t lineIndex = 1;
+        std::string line;
+        
+        while (TryPeek(line))
+        {            
+            const static std::regex TitleRgx { "(#{1,6}) (.*)" };
+            const static std::regex BlockquoteRgx { "(>{1} )(.*)" };
+            // Note : Maybe look for a more efficient regex
+            const static std::regex NotEmptyLineRgx { "(?!( {1,}|\n{1,}|\r{1,}|$))" };
+
+            std::smatch match;
+
+            if(line.size() == 0 || !std::regex_search(line, NotEmptyLineRgx))
+            {
+                tokens.push_back({
+                    .type = TokenType::EmptyLine,
+                    .ln = lineIndex,
+                    .col = 1U,
+                });
+            }
+            else if (std::regex_match(line, match, BlockquoteRgx))
+            {
+                tokens.push_back({
+                    .type = TokenType::QuoteLine,
+                    .value = match[2],
+                    .ln = lineIndex,
+                    .col = static_cast<uint32_t>(match.position(2)) + 1,
+                });
+            }
+            else if (std::regex_match(line, match, TitleRgx))
+            {
+                tokens.push_back({
+                    .type = TokenType::TitleSymbol,
+                    .value = match[1],
+                    .ln = lineIndex,
+                    .col = static_cast<uint32_t>(match.position(1)) + 1,
+                });
+
+                tokens.push_back({
+                    .type = TokenType::TextLiteral,
+                    .value = match[2],
+                    .ln = lineIndex,
+                    .col = static_cast<uint32_t>(match.position(2)) + 1,
+                });
+            }
+            else
+            {
+                tokens.push_back({
+                    .type = TokenType::TextLine,
+                    .value = line,
+                    .ln = lineIndex,
+                    .col = 1U,
+                });
+            }
+            
+            Consume();
+            ++lineIndex;
+        }
+
+        return tokens;
+    }
+
+private:
+
+    [[nodiscard]] bool TryPeek(std::string& line) const
     {
         if (m_currentIndex >= m_source.size())
         {
@@ -49,7 +119,7 @@ public:
         return true;
     }
 
-    void Consume() 
+    void Consume()
     {
         auto endOfLineInfo = FindEndOfLine(m_currentIndex);
         
@@ -62,81 +132,6 @@ public:
             m_currentIndex = m_source.size();
         }
     }
-
-    std::vector<Token> Tokenize() 
-    {
-        std::vector<Token> tokens;
-        
-        std::string line;
-        uint32_t lineIndex = 1;
-        
-        while (TryPeek(line))
-        {
-            const static std::regex TitleRgx { "(#{1,6}) (.*)" };
-            const static std::regex BlockquoteRgx { "(>{1} )(.*)" };
-            // Note : Maybe check for a more efficient regex
-            const static std::regex NotEmptyLineRgx { "(?!( {1,}|\n{1,}|\r{1,}|$))" };
-
-            std::smatch match;
-
-            if(line.size() == 0 || !std::regex_search(line, NotEmptyLineRgx))
-            {
-                Consume();
-
-                tokens.push_back({
-                    .type = TokenType::EmptyLine,
-                    .ln = lineIndex,
-                    .col = 1U,
-                });
-            }
-            else if (std::regex_match(line, match, BlockquoteRgx))
-            {
-                Consume();
-
-                tokens.push_back({
-                    .type = TokenType::QuoteLine,
-                    .value = match[2],
-                    .ln = lineIndex,
-                    .col = static_cast<uint32_t>(match.position(2)) + 1,
-                });
-            }
-            else if (std::regex_match(line, match, TitleRgx))
-            {
-                Consume();
-
-                tokens.push_back({
-                    .type = TokenType::TitleSymbol,
-                    .value = match[1],
-                    .ln = lineIndex,
-                    .col = static_cast<uint32_t>(match.position(1)) + 1,
-                });
-
-                tokens.push_back({
-                    .type = TokenType::TextLiteral,
-                    .value = match[2],
-                    .ln = lineIndex,
-                    .col = static_cast<uint32_t>(match.position(2)) + 1,
-                });
-            }
-            else
-            {
-                Consume();
-
-                tokens.push_back({
-                    .type = TokenType::TextLine,
-                    .value = line,
-                    .ln = lineIndex,
-                    .col = 1U,
-                });
-            }
-
-            ++lineIndex;
-        }
-
-        return tokens;
-    }
-
-private:
 
     struct EndOfLineInfo { size_t index = 0; uint8_t terminatorOffset = 0; };
     EndOfLineInfo FindEndOfLine(size_t startPos = 0) const
@@ -159,6 +154,6 @@ private:
         return { std::string::npos, 0 };
     }
 
-    const std::string& m_source;
+    std::string m_source;
     size_t m_currentIndex = 0;
 };
