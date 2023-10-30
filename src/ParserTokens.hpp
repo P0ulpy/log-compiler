@@ -24,8 +24,30 @@ struct QuoteBlockToken
     std::vector<Token> textLiterals;
 };
 
-using ParserTokensTypes = FundamentalTypeList<
+struct NodeToken
+{
+    Scope<TitleToken> title;
+    std::vector<
+        std::variant<
+            Scope<TextLineToken>,
+            Scope<TitleToken>,
+            Scope<QuoteBlockToken>
+        >
+    > content;
+};
+
+using ParserTokensTypes = TypeList<
     Scope<TextLineToken>,
     Scope<TitleToken>,
-    Scope<QuoteBlockToken>
+    Scope<QuoteBlockToken>,
+    Scope<NodeToken>
 >;
+
+using NotNodeTypes = TypeList<
+    Scope<NodeToken>
+>;
+
+using a = TypeList<int, bool>;
+using b = TypeList<int, char>;
+
+using NodeTypes = TypeListSubtraction<a, b>::type;

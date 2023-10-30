@@ -6,7 +6,7 @@
 #include "Tokenizer.hpp"
 #include "ParserTokens.hpp"
 
-using ProgramTokenVariant = TypeListToVariant_t<ParserTokensTypes>;
+using ProgramTokenVariant = ParserTokensTypes::ToVariant_t;
 
 // NOTE :   To improve the memory continguity of the Pasing phase we could maybe use an ArenaAllocator with a computed size at Parser construction
 //          this whould prevent from making a heap allocations for every tokens 
