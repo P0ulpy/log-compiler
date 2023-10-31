@@ -24,30 +24,20 @@ struct QuoteBlockToken
     std::vector<Token> textLiterals;
 };
 
-struct NodeToken
-{
-    Scope<TitleToken> title;
-    std::vector<
-        std::variant<
-            Scope<TextLineToken>,
-            Scope<TitleToken>,
-            Scope<QuoteBlockToken>
-        >
-    > content;
-};
-
 using ParserTokensTypes = TypeList<
     Scope<TextLineToken>,
     Scope<TitleToken>,
-    Scope<QuoteBlockToken>,
+    Scope<QuoteBlockToken>
+>;
+
+struct NodeToken
+{
+    Scope<TitleToken> title;
+    std::vector<ParserTokensTypes::ToVariant_t> content;
+};
+
+using ParserNodeTypes = TypeList<
     Scope<NodeToken>
 >;
 
-using NotNodeTypes = TypeList<
-    Scope<NodeToken>
->;
-
-using a = TypeList<int, bool>;
-using b = TypeList<int, char>;
-
-using NodeTypes = TypeListSubtraction<a, b>::type;
+using AllParserTokensTypes = ParserTokensTypes::Concat_t<ParserNodeTypes>;
