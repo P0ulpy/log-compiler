@@ -4,14 +4,12 @@
 #include <sstream>
 
 #include "CLI.hpp"
-#include "Tokenizer.hpp"
-#include "Parser.hpp"
+#include "Compilation/Tokenizer.hpp"
+#include "Compilation/Parser.hpp"
 
 int main(int argc, const char** argv)
 {
-    InputParser inputParser(argc, argv);
-
-    auto params = ProcessCLIArgs(inputParser);
+    auto params = ProcessCLIArgs(argc, argv);
 
     // Source file loading
     std::stringstream fileContent;
@@ -36,6 +34,10 @@ int main(int argc, const char** argv)
 
     Parser parser(tokens);
     auto program = parser.ParseProgram();
+
+    // Some debug info
+    if(CompilerOptions::DebugMode && CompilerOptions::Verbose)
+        StdOutProgram(program);
     
     return EXIT_SUCCESS;
 }

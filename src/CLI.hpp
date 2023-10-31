@@ -1,22 +1,12 @@
 #pragma once
 
 #include <iostream>
+#include <type_traits>
 
 #include "main.hpp"
-#include "InputsParser.hpp"
-#include "Tokenizer.hpp"
-
-const char* TokenTypeToCstr(TokenType tokenType)
-{
-    switch(tokenType)
-    {
-        case TokenType::EmptyLine :         return "EmptyLine";
-        case TokenType::TextLine :          return "TextLine";
-        case TokenType::TextLiteral :       return "TextLiteral";
-        case TokenType::TitleSymbol :       return "TitleSymbol";
-        case TokenType::QuoteLine :         return "QuoteLine";
-    }
-}
+#include "Utils/InputsParser.hpp"
+#include "Compilation/Tokenizer.hpp"
+#include "Compilation/Parser.hpp"
 
 const char* OutputFormatsToCstr(CompilerOptions::OutputFormats tokenType)
 {
@@ -55,16 +45,26 @@ void StdOutInputFileInfo(const std::string_view& inputFilePath, const std::strin
 void StdOutTokens(const std::vector<Token>& tokens)
 {
     std::cout << "Tokens : \n";
-    for(auto token : tokens)
+    for(const auto& token : tokens)
     {
-        std::cout 
-            << "    { "
-            << "Type: `" << TokenTypeToCstr(token.type) << '`'
-            << ", Value: `" << token.value << '`' 
-            << ", pos: " << token.ln << ':' << token.col
-            << " }" 
-            << std::endl;
+        std::cout << "    " << token << '\n';
     }
+
+    std::cout << std::endl;
+}
+
+void StdOutProgram(const std::vector<ProgramTokenVariant>& program)
+{
+    std::cout << "\nProgram tokens : \n";
+    for(auto& tokenVariant : program)
+    {
+        std::visit([](auto&& token) 
+        {
+            std::cout << "    " << token << '\n';
+        }, tokenVariant);
+    }
+
+    std::cout << std::endl;
 }
 
 struct ParsedCLIParameters 
@@ -72,8 +72,10 @@ struct ParsedCLIParameters
     std::string inputFilePath;
 };
 
-ParsedCLIParameters ProcessCLIArgs(const InputParser& inputParser)
+ParsedCLIParameters ProcessCLIArgs(int argc, const char** argv)
 {    
+    InputParser inputParser(argc, argv);
+
     if(inputParser.CmdOptionExists("--help") || inputParser.CmdOptionExists("-h"))
     {
         std::cout 

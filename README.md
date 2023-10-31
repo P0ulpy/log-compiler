@@ -41,6 +41,7 @@ The Log Compiler accepts the following command-line arguments:
 > This is a single line zone, and this text is its content.
 
 This is a plain text
+Wow what a text !
 
 # Section 2
 
@@ -71,7 +72,7 @@ This is a plain text
                 },
                 {
                     "type" : "plain-text",
-                    "text" : "This is a plain text"
+                    "text" : "This is a plain text\nWow what a text !"
                 }
             ]
         },
@@ -123,7 +124,7 @@ while (!WindowShouldClose())
             GuiRenderText("This is a single line zone, and this text is its content.");
         GuiEndBlock();
     
-        GuiRenderText("This is a plain text");
+        GuiRenderText("This is a plain text\nWow what a text !");
 
     GuiRenderTitle(1, "Section 2");
 

@@ -2,23 +2,8 @@
 
 #include <vector>
 #include <regex>
-#include <optional>
 
-enum class TokenType
-{
-    EmptyLine,          // An empty line containing only one or more `\s`, `\n` or `\r` characters
-    TextLine,           // A not empty line not Tokenized as an other token
-    TextLiteral,        // Any sequence of characters except end of line
-    TitleSymbol,        // `#{1,6}` usually followed by the name of the note as a `TextLiteral` (exemple : `# My super duper note`)
-    QuoteLine,          // `> ` followed by the content of the QuoteLine (exemple : `> My super duper quoteblock line`)
-};
-
-struct Token
-{
-    TokenType type;
-    std::string value;
-    uint32_t ln = 0, col = 0;
-};
+#include "Token.hpp"
 
 class Tokenizer
 {
@@ -99,21 +84,21 @@ private:
 
     [[nodiscard]] bool TryPeek(std::string& line) const
     {
-        if (m_currentIndex >= m_source.size())
+        if (m_cursor >= m_source.size())
         {
             return false;
         }
 
-        size_t lineEndIndex = FindEndOfLine(m_currentIndex).index;
+        size_t lineEndIndex = FindEndOfLine(m_cursor).index;
 
         if (lineEndIndex != std::string::npos)
         {
-            line = m_source.substr(m_currentIndex, lineEndIndex - m_currentIndex);
+            line = m_source.substr(m_cursor, lineEndIndex - m_cursor);
         }
         else 
         {
             // This handles the last line
-            line = m_source.substr(m_currentIndex);
+            line = m_source.substr(m_cursor);
         }
 
         return true;
@@ -121,20 +106,20 @@ private:
 
     void Consume()
     {
-        auto endOfLineInfo = FindEndOfLine(m_currentIndex);
+        auto endOfLineInfo = FindEndOfLine(m_cursor);
         
         if (endOfLineInfo.index != std::string::npos)
         {
-            m_currentIndex = endOfLineInfo.index + endOfLineInfo.terminatorOffset;
+            m_cursor = endOfLineInfo.index + endOfLineInfo.terminatorOffset;
         } 
         else 
         {
-            m_currentIndex = m_source.size();
+            m_cursor = m_source.size();
         }
     }
 
     struct EndOfLineInfo { size_t index = 0; uint8_t terminatorOffset = 0; };
-    EndOfLineInfo FindEndOfLine(size_t startPos = 0) const
+    [[nodiscard]] EndOfLineInfo FindEndOfLine(size_t startPos = 0) const
     {
         size_t length = m_source.length();
         
@@ -154,6 +139,8 @@ private:
         return { std::string::npos, 0 };
     }
 
+private:
+
     std::string m_source;
-    size_t m_currentIndex = 0;
+    size_t m_cursor = 0;
 };
