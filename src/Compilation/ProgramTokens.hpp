@@ -1,22 +1,18 @@
 #pragma once
 
 #include <vector>
+#include <variant>
+#include <ostream>
 
-#include "../main.hpp"
 #include "../Utils/TypeList.hpp"
 #include "../Utils/StringUtils.hpp"
-#include "Token.hpp"
 
 struct TextBlockToken
 {
     std::string text;
 };
 
-std::ostream& operator<<(std::ostream& os, const TextBlockToken& token)
-{
-    os << "TextBlockToken : `" << FormatSpecialCharacters(token.text) << '`';
-    return os;
-}
+std::ostream& operator<<(std::ostream& os, const TextBlockToken& token);
 
 struct TitleToken
 {
@@ -25,11 +21,7 @@ struct TitleToken
     std::string text;
 };
 
-std::ostream& operator<<(std::ostream& os, const TitleToken& token)
-{
-    os << "TitleToken : level `" << (uint16_t)token.level << "` content: `" << FormatSpecialCharacters(token.text) << '`';
-    return os;
-}
+std::ostream& operator<<(std::ostream& os, const TitleToken& token);
 
 struct QuoteBlockToken
 {
@@ -37,11 +29,7 @@ struct QuoteBlockToken
     std::string text;
 };
 
-std::ostream& operator<<(std::ostream& os, const QuoteBlockToken& token)
-{
-    os << "QuoteBlockToken : `" << FormatSpecialCharacters(token.text) << '`';
-    return os;
-}
+std::ostream& operator<<(std::ostream& os, const QuoteBlockToken& token);
 
 using ProgramTokensTypes = TypeList<
     TextBlockToken,
@@ -55,13 +43,11 @@ struct NodeToken
     std::vector<ProgramTokensTypes::ToVariant_t> content;
 };
 
-std::ostream& operator<<(std::ostream& os, const NodeToken& token)
-{
-    return os;
-}
+std::ostream& operator<<(std::ostream& os, const NodeToken& token);
 
 using ProgramNodeTypes = TypeList<
     NodeToken
 >;
 
 using AllProgramTokensTypes = ProgramTokensTypes::Concat_t<ProgramNodeTypes>;
+using ProgramTokenVariant = AllProgramTokensTypes::ToVariant_t;
