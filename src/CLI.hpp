@@ -103,12 +103,15 @@ ParsedCLIParameters ProcessCLIArgs(int argc, const char** argv)
     params.inputFilePath = inputParser[0];
 
     if(inputParser.CmdOptionExists("--debug"))
+    {
         CompilerOptions::DebugMode = true;
-    if(inputParser.CmdOptionExists("--verbose"))
-        CompilerOptions::Verbose = true;
-
-    if(CompilerOptions::DebugMode)
         std::cout << "You are un debug mode" << std::endl;
+    }
+    if(inputParser.CmdOptionExists("--verbose"))
+    {
+        CompilerOptions::Verbose = true;
+        std::cout << "Compiler std out set to verbose" << std::endl;
+    }
 
     if(inputParser.CmdOptionExists("--format"))
     {

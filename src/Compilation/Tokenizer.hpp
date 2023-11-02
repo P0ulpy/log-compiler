@@ -118,7 +118,7 @@ private:
         }
     }
 
-    struct EndOfLineInfo { size_t index = 0; uint8_t terminatorOffset = 0; };
+    struct EndOfLineInfo { size_t index = 0; uint16_t terminatorOffset = 0; };
     [[nodiscard]] EndOfLineInfo FindEndOfLine(size_t startPos = 0) const
     {
         size_t length = m_source.length();

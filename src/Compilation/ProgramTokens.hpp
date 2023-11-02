@@ -4,6 +4,7 @@
 
 #include "../main.hpp"
 #include "../Utils/TypeList.hpp"
+#include "../Utils/StringUtils.hpp"
 #include "Token.hpp"
 
 struct TextBlockToken
@@ -13,30 +14,32 @@ struct TextBlockToken
 
 std::ostream& operator<<(std::ostream& os, const TextBlockToken& token)
 {
-    os << "TextBlockToken : `" << token.text << '`';
+    os << "TextBlockToken : `" << FormatSpecialCharacters(token.text) << '`';
     return os;
 }
 
 struct TitleToken
 {
     // Title of level 0 is invalid, assert this at Parsing (should be impossible but throw an error anyway to tell Tokanization messed up)
-    uint8_t level = 0;
-    Token textLiteral;
+    uint16_t level = 0;
+    std::string text;
 };
 
 std::ostream& operator<<(std::ostream& os, const TitleToken& token)
 {
+    os << "TitleToken : level `" << (uint16_t)token.level << "` content: `" << FormatSpecialCharacters(token.text) << '`';
     return os;
 }
 
 struct QuoteBlockToken
 {
     // QuoteBlock with 0 elements is invalid, assert this at Parsing (should be impossible but throw an error anyway to tell Tokanization messed up)    
-    std::vector<Token> textLiterals;
+    std::string text;
 };
 
 std::ostream& operator<<(std::ostream& os, const QuoteBlockToken& token)
 {
+    os << "QuoteBlockToken : `" << FormatSpecialCharacters(token.text) << '`';
     return os;
 }
 
