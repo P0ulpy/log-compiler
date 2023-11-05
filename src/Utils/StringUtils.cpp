@@ -21,3 +21,20 @@ std::string FormatSpecialCharacters(const std::string& str)
 
     return builder.str();
 }
+
+std::string TokenError(const Token &token)
+{
+    std::stringstream builder;
+    
+    const size_t displayedErrorPartMaxSize = 20;
+    std::string errorPart = (token.value.size() < displayedErrorPartMaxSize) 
+        ? ((token.value.empty()) ? "" : token.value) 
+        : token.value.substr(0, displayedErrorPartMaxSize);
+
+    builder
+        << '`' << TokenTypeToCstr(token.type) << '`' << '\n'
+        << "at line " << token.ln << ", column " << token.col << " -> `" << errorPart << '`';
+
+    return builder.str();
+
+}

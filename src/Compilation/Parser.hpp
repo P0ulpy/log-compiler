@@ -17,7 +17,7 @@ public:
     Parser(std::vector<Token> tokens);
 
     [[nodiscard]] std::vector<ProgramTokenVariant> ParseProgram();
-    [[nodiscard]] std::optional<ProgramTokenVariant> Parse();
+    [[nodiscard]] std::optional<ProgramTokenVariant> ParseNext();
 
 private:
 

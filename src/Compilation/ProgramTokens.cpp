@@ -1,5 +1,7 @@
 #include "ProgramTokens.hpp"
 
+#include <string>
+
 std::ostream &operator<<(std::ostream &os, const TextBlockToken &token)
 {
     os << "TextBlockToken : `" << FormatSpecialCharacters(token.text) << '`';
@@ -20,5 +22,31 @@ std::ostream &operator<<(std::ostream &os, const QuoteBlockToken &token)
 
 std::ostream &operator<<(std::ostream &os, const NodeToken &token)
 {
+    uint16_t level = token.title.level;
+    std::string indent;
+    for(uint16_t i = 0; i < level; ++i) indent += "    ";
+
+    os << indent << token.title << '\n';
+
+    indent += "  - ";
+
+    for(auto& subTokenVariant : token.content)
+    {
+        std::visit([&](auto&& subToken) 
+        {
+            using Type = std::decay_t<decltype(subToken)>;
+
+            if constexpr (!std::is_same_v<NodeToken, Type>) 
+            {
+                os << indent << subToken << '\n';
+            }
+            else
+            {
+                os << subToken << '\n';
+            }
+        
+        }, subTokenVariant);
+    }
+
     return os;
 }

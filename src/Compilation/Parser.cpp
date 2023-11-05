@@ -1,5 +1,7 @@
 #include "Parser.hpp"
 
+#include "../main.hpp"
+
 #include <iostream>
 
 Parser::Parser(std::vector<Token> tokens)
@@ -12,7 +14,7 @@ std::vector<ProgramTokenVariant> Parser::ParseProgram()
 
     while(CanPeek())
     {
-        if(auto programToken = Parse())
+        if(auto programToken = ParseNext())
         {
             program.push_back(programToken.value());
         }
@@ -21,9 +23,9 @@ std::vector<ProgramTokenVariant> Parser::ParseProgram()
     return program;
 }
 
-std::optional<ProgramTokenVariant> Parser::Parse()
+std::optional<ProgramTokenVariant> Parser::ParseNext()
 {
-    if(auto textLine = TryConsume(TokenType::TextLine))
+    if(auto textLine = TryConsume(TokenType::TextLine)) 
     {
         TextBlockToken textBlockToken {
             .text = textLine.value().value
@@ -40,9 +42,13 @@ std::optional<ProgramTokenVariant> Parser::Parse()
     {
         uint16_t titleLevel = titleSymbolOpt.value().value.size();
 
-        if(titleLevel == 0)
+        if(titleLevel == 0 || titleLevel > 6)
         {
-            std::cerr << "ERROR : Parsing error, Invalid title level" << std::endl;
+            std::cerr 
+                << "Parsing ERROR : Invalid title level : `" << titleLevel 
+                << "` for token " << TokenError(titleSymbolOpt.value()) 
+                << std::endl;
+                
             exit(EXIT_FAILURE);
         }
 
@@ -53,7 +59,45 @@ std::optional<ProgramTokenVariant> Parser::Parse()
         auto textLiteral = ShouldConsume(TokenType::TextLiteral);
         titleToken.text = textLiteral.value().value;
 
-        return titleToken;
+        // Content
+
+        NodeToken nodeToken {
+            .title = titleToken
+        };
+
+        while(CanPeek())
+        {
+            if(auto programTokenOtp = ParseNext())
+            {
+                bool isChildToken = true;
+
+                std::visit([&](auto&& programToken) 
+                {
+                    using Type = std::decay_t<decltype(programTokenOtp.value())>;
+                    
+                    if constexpr (std::is_same_v<NodeToken, Type>)
+                    {
+                        if(static_cast<const NodeToken&>(programToken).title.level <= titleLevel)
+                        {
+                            isChildToken = false;
+                        }
+                    }
+                    
+                }, programTokenOtp.value());
+
+
+                if(isChildToken)
+                {
+                    nodeToken.content.push_back(programTokenOtp.value());
+                }
+                else
+                {
+                    return programTokenOtp;
+                }
+            }
+        }
+
+        return nodeToken;
     }
     else if(auto quoteLine = TryConsume(TokenType::QuoteBlockLine))
     {
@@ -74,7 +118,9 @@ std::optional<ProgramTokenVariant> Parser::Parse()
     }
     else
     {
-        std::cerr << "ERROR : Unhandled Token, " << Peek() << std::endl;
+        if(CompilerOptions::DebugMode)
+            std::cerr << "Parsing WARN : Unhandled Token, `" << Peek() << '`' << std::endl;
+        
         Consume();
         return {};
     }
@@ -109,17 +155,10 @@ std::optional<Token> Parser::ShouldConsume(TokenType type, const std::string &er
 
         if(token.type != type)
         {
-            const size_t displayedErrorPartMaxSize = 6;
-            std::string errorPart = (token.value.size() < displayedErrorPartMaxSize) 
-                ? ((token.value.empty()) ? "" : token.value) 
-                : token.value.substr(0, displayedErrorPartMaxSize);
-
             std::cerr
                 << errorMsg << '\n'
                 << "Expected token : `" << TokenTypeToCstr(type) << '`' << '\n'
-                << "Unexpexted token `" << TokenTypeToCstr(token.type) << '`'
-                << " at line " << token.ln << ", column " << token.col << '\n'
-                << "-> `" << errorPart << '`'
+                << "Unexpexted token " << TokenError(token)
                 << std::endl;
         }
         else

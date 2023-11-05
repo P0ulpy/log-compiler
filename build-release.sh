@@ -1,0 +1,1 @@
+g++ -std=c++20 -O6 -o out/Release/log-compiler src/*.cpp src/Compilation/*.cpp src/Utils/*.cpp

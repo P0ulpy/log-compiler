@@ -1,6 +1,6 @@
 #include "Token.hpp"
 
-const char *TokenTypeToCstr(TokenType tokenType)
+const char* TokenTypeToCstr(TokenType tokenType)
 {
     switch(tokenType)
     {
@@ -8,7 +8,7 @@ const char *TokenTypeToCstr(TokenType tokenType)
         case TokenType::TextLine :          return "TextLine";
         case TokenType::TextLiteral :       return "TextLiteral";
         case TokenType::TitleSymbol :       return "TitleSymbol";
-        case TokenType::QuoteBlockLine :         return "QuoteLine";
+        case TokenType::QuoteBlockLine :    return "QuoteLine";
     }
 
     return "INVALID TokenType";

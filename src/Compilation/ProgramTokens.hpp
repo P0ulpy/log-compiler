@@ -16,7 +16,6 @@ std::ostream& operator<<(std::ostream& os, const TextBlockToken& token);
 
 struct TitleToken
 {
-    // Title of level 0 is invalid, assert this at Parsing (should be impossible but throw an error anyway to tell Tokanization messed up)
     uint16_t level = 0;
     std::string text;
 };
@@ -25,29 +24,30 @@ std::ostream& operator<<(std::ostream& os, const TitleToken& token);
 
 struct QuoteBlockToken
 {
-    // QuoteBlock with 0 elements is invalid, assert this at Parsing (should be impossible but throw an error anyway to tell Tokanization messed up)    
     std::string text;
 };
 
 std::ostream& operator<<(std::ostream& os, const QuoteBlockToken& token);
 
+struct NodeToken;
+
+/** Tokens Types declaration
+ * All Tokens types MUST be declared in the TypeList, 
+ * otherwise it will not be processed correctly in rest of the systems
+*/
 using ProgramTokensTypes = TypeList<
     TextBlockToken,
     TitleToken,
-    QuoteBlockToken
+    QuoteBlockToken,
+    NodeToken
 >;
+
+using ProgramTokenVariant = ProgramTokensTypes::ToVariant_t;
 
 struct NodeToken
 {
     TitleToken title;
-    std::vector<ProgramTokensTypes::ToVariant_t> content;
+    std::vector<ProgramTokenVariant> content;
 };
 
 std::ostream& operator<<(std::ostream& os, const NodeToken& token);
-
-using ProgramNodeTypes = TypeList<
-    NodeToken
->;
-
-using AllProgramTokensTypes = ProgramTokensTypes::Concat_t<ProgramNodeTypes>;
-using ProgramTokenVariant = AllProgramTokensTypes::ToVariant_t;

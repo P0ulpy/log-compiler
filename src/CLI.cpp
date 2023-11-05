@@ -42,7 +42,16 @@ void StdOutProgram(const std::vector<ProgramTokenVariant> &program)
     {
         std::visit([](auto&& token) 
         { 
-            std::cout << "    " << token << '\n'; 
+            using Type = std::decay_t<decltype(token)>;
+
+            if constexpr (!std::is_same_v<NodeToken, Type>) 
+            {
+                std::cout << "    " << token << '\n'; 
+            }
+            else
+            {
+                std::cout << token << '\n'; 
+            }
         }, 
         tokenVariant);
     }
