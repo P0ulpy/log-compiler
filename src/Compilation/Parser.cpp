@@ -56,7 +56,7 @@ std::optional<ProgramTokenVariant> Parser::ParseNext()
             .level = titleLevel
         };
 
-        auto textLiteral = ShouldConsume(TokenType::TextLiteral);
+        auto textLiteral = MustConsume(TokenType::TextLiteral);
         titleToken.text = textLiteral.value().value;
 
         // Content
@@ -71,7 +71,7 @@ std::optional<ProgramTokenVariant> Parser::ParseNext()
             {
                 bool isChildToken = true;
 
-                std::visit([&](auto&& programToken) 
+                std::visit([&](auto&& programToken)
                 {
                     using Type = std::decay_t<decltype(programTokenOtp.value())>;
                     
@@ -84,7 +84,6 @@ std::optional<ProgramTokenVariant> Parser::ParseNext()
                     }
                     
                 }, programTokenOtp.value());
-
 
                 if(isChildToken)
                 {
@@ -147,7 +146,7 @@ std::optional<Token> Parser::TryPeek(int16_t offset) const
     return {};
 }
 
-std::optional<Token> Parser::ShouldConsume(TokenType type, const std::string &errorMsg)
+std::optional<Token> Parser::MustConsume(TokenType type, const std::string &errorMsg)
 {
     if(auto tokenOpt = TryPeek())
     {

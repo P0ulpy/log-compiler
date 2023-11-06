@@ -28,7 +28,7 @@ private:
 
     inline Token Consume()                                          { return m_tokens[m_cursor++]; }
     [[nodiscard]] std::optional<Token> TryConsume(TokenType type);
-    [[nodiscard]] std::optional<Token> ShouldConsume(TokenType type, const std::string& errorMsg = "Syntax ERROR");
+    [[nodiscard]] std::optional<Token> MustConsume(TokenType type, const std::string& errorMsg = "Syntax ERROR");
 
 private:
     std::vector<Token> m_tokens;

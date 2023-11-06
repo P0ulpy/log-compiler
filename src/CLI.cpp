@@ -40,6 +40,8 @@ void StdOutProgram(const std::vector<ProgramTokenVariant>& program)
     std::cout << "Program tokens : \n";
     for(auto& tokenVariant : program)
     {
+        std::cout << "_TK_" << '\n'; 
+
         std::visit([](auto&& token) 
         { 
             using Type = std::decay_t<decltype(token)>;

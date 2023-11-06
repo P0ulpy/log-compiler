@@ -1,6 +1,7 @@
 #include "ProgramTokens.hpp"
 
 #include <string>
+#include <iostream>
 
 std::ostream &operator<<(std::ostream &os, const TextBlockToken &token)
 {
@@ -26,12 +27,14 @@ std::ostream &operator<<(std::ostream &os, const NodeToken &token)
     std::string indent;
     for(uint16_t i = 0; i < level; ++i) indent += "    ";
 
-    os << indent << token.title << '\n';
+    os << indent << token.title << " with " << token.content.size() << " children" << '\n';
 
     indent += "  - ";
 
     for(auto& subTokenVariant : token.content)
     {
+        std::cout << "wut ?" << std::endl;
+        
         std::visit([&](auto&& subToken) 
         {
             using Type = std::decay_t<decltype(subToken)>;
@@ -42,7 +45,7 @@ std::ostream &operator<<(std::ostream &os, const NodeToken &token)
             }
             else
             {
-                os << subToken << '\n';
+                os << subToken;
             }
         
         }, subTokenVariant);

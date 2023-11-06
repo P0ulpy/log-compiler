@@ -33,13 +33,13 @@ int main(int argc, const char** argv)
     Tokenizer tokenizer(fileStr);
     auto tokens = tokenizer.Tokenize();
 
-    if(CompilerOptions::DebugMode && CompilerOptions::Verbose)
+    if(CompilerOptions::DebugMode)
         StdOutTokens(tokens);
 
     Parser parser(tokens);
     auto program = parser.ParseProgram();
 
-    if(CompilerOptions::DebugMode && CompilerOptions::Verbose)
+    if(CompilerOptions::DebugMode)
         StdOutProgram(program);
     
     auto end = std::chrono::system_clock::now();
