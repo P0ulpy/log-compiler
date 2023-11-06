@@ -21,7 +21,7 @@ For more information on how to use the Log Compiler, refer to the project's docu
 
 The Log Compiler accepts the following command-line arguments:
 
-**Usage :** `Usage : log-compiler InputFile [-o outputFile] [--format json|(markdown|md)|c] [--verbose] [--debug] [-v] [-h]`
+**Usage :** `log-compiler InputFile [-o outputFile] [--format json|(markdown|md)|c] [--verbose] [--debug] [-v] [-h]`
 
 **Positional arguments:**
 - `InputFile`         : Specifies the input log file to be compiled.
@@ -72,7 +72,7 @@ This is a plain text
                 },
                 {
                     "type" : "plain-text",
-                    "text" : "This is a plain text\nWow what a text !"
+                    "text" : "This is a plain text Wow what a text !"
                 }
             ]
         },
@@ -124,7 +124,7 @@ while (!WindowShouldClose())
             GuiRenderText("This is a single line zone, and this text is its content.");
         GuiEndBlock();
     
-        GuiRenderText("This is a plain text\nWow what a text !");
+        GuiRenderText("This is a plain text Wow what a text !");
 
     GuiRenderTitle(1, "Section 2");
 
