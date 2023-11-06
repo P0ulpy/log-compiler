@@ -3,7 +3,7 @@
 #include "main.hpp"
 #include "Utils/InputsParser.hpp"
 
-const char *OutputFormatsToCstr(CompilerOptions::OutputFormats tokenType)
+const char* OutputFormatsToCstr(CompilerOptions::OutputFormats tokenType)
 {
     using OutputFormats = CompilerOptions::OutputFormats;
 
@@ -17,14 +17,14 @@ const char *OutputFormatsToCstr(CompilerOptions::OutputFormats tokenType)
     return "INVALID OutputFormats";
 }
 
-void StdOutInputFileInfo(const std::string_view &inputFilePath, const std::stringstream &fileContent)
+void StdOutInputFileInfo(const std::string_view& inputFilePath, const std::stringstream& fileContent)
 {
     std::cout 
         << "Input file : " << inputFilePath << '\n'
         << std::endl;
 }
 
-void StdOutTokens(const std::vector<Token> &tokens)
+void StdOutTokens(const std::vector<Token>& tokens)
 {
     std::cout << "Tokens : \n";
     for(const auto& token : tokens)
@@ -35,7 +35,7 @@ void StdOutTokens(const std::vector<Token> &tokens)
     std::cout << std::endl;
 }
 
-void StdOutProgram(const std::vector<ProgramTokenVariant> &program)
+void StdOutProgram(const std::vector<ProgramTokenVariant>& program)
 {
     std::cout << "Program tokens : \n";
     for(auto& tokenVariant : program)
@@ -59,7 +59,7 @@ void StdOutProgram(const std::vector<ProgramTokenVariant> &program)
     std::cout << std::endl;
 }
 
-ParsedCLIParameters ProcessCLIArgs(int argc, const char **argv)
+ParsedCLIParameters ProcessCLIArgs(int argc, const char** argv)
 {    
     InputParser inputParser(argc, argv);
 

@@ -33,7 +33,7 @@ std::optional<ProgramTokenVariant> Parser::ParseNext()
 
         while(auto subTextLine = TryConsume(TokenType::TextLine))
         {
-            textBlockToken.text += '\n' + subTextLine.value().value;
+            textBlockToken.text += ' ' + subTextLine.value().value;
         }
 
         return textBlockToken;
