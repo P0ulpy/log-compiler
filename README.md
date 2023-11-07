@@ -185,7 +185,7 @@ In this PEG-based grammar:
 - `EndLine`:
   - Represents the end of a line, which can be `\n`, `\r`, or `\r\n`.
 
-For now, the grammar only contains `plain text`, `titles`, and `blockquotes` from Markdown, but I plan to add other Markdown syntax in the future.
+For now, the grammar only contains `plain text`, `titles`, and `blockquotes` from Markdown, but I plan to add other Markdown syntax in the future like text format, links and more !
 
 ## License
 

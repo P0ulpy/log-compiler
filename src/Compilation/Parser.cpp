@@ -8,19 +8,21 @@ Parser::Parser(std::vector<Token> tokens)
     : m_tokens(std::move(tokens))
 {}
 
-std::vector<ProgramTokenVariant> Parser::ParseProgram()
+ProgramRoot Parser::ParseProgram(const std::string_view& name)
 {
-    std::vector<ProgramTokenVariant> program;
+    ProgramRoot rootNode {
+        .name = std::string(name),
+    };
 
     while(CanPeek())
     {
         if(auto programToken = ParseNext())
         {
-            program.push_back(programToken.value());
+            rootNode.content.push_back(programToken.value());
         }
     }
 
-    return program;
+    return rootNode;
 }
 
 std::optional<ProgramTokenVariant> Parser::ParseNext()
@@ -40,6 +42,8 @@ std::optional<ProgramTokenVariant> Parser::ParseNext()
     }
     else if(auto titleSymbolOpt = TryConsume(TokenType::TitleSymbol))
     {
+        // Title token
+
         uint16_t titleLevel = titleSymbolOpt.value().value.size();
 
         if(titleLevel == 0 || titleLevel > 6)
@@ -59,7 +63,7 @@ std::optional<ProgramTokenVariant> Parser::ParseNext()
         auto textLiteral = MustConsume(TokenType::TextLiteral);
         titleToken.text = textLiteral.value().value;
 
-        // Content
+        // Content tokens
 
         NodeToken nodeToken {
             .title = titleToken

@@ -8,7 +8,7 @@
 
 // NOTE :   To improve the memory continguity of the Pasing phase we could maybe use an ArenaAllocator with a computed size at Parser construction
 //          this whould prevent from making a heap allocations for every tokens 
-// NOTE for the note : we don't use heap allocation anymore but a ArenaAllocator can still be relevant
+// NOTE for the note : we use multiple contiguous heap allocation (with std:vector) now, but a ArenaAllocator can still be relevant
 
 class Parser
 {
@@ -16,7 +16,7 @@ public:
     Parser() = delete;
     Parser(std::vector<Token> tokens);
 
-    [[nodiscard]] std::vector<ProgramTokenVariant> ParseProgram();
+    [[nodiscard]] ProgramRoot ParseProgram(const std::string_view& name = "program");
     [[nodiscard]] std::optional<ProgramTokenVariant> ParseNext();
 
 private:

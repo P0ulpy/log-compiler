@@ -32,9 +32,7 @@ std::ostream &operator<<(std::ostream &os, const NodeToken &token)
     indent += "  - ";
 
     for(auto& subTokenVariant : token.content)
-    {
-        std::cout << "wut ?" << std::endl;
-        
+    {      
         std::visit([&](auto&& subToken) 
         {
             using Type = std::decay_t<decltype(subToken)>;

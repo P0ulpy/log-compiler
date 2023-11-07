@@ -50,4 +50,10 @@ struct NodeToken
     std::vector<ProgramTokenVariant> content;
 };
 
+struct ProgramRoot
+{
+    std::string name;
+    std::vector<ProgramTokenVariant> content;
+};
+
 std::ostream& operator<<(std::ostream& os, const NodeToken& token);
