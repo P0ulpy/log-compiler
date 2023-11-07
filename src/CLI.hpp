@@ -25,7 +25,7 @@ optional arguments:
 
 void StdOutInputFileInfo(const std::string_view& inputFilePath, const std::stringstream& fileContent);
 void StdOutTokens(const std::vector<Token>& tokens);
-void StdOutProgram(const std::vector<ProgramTokenVariant>& program);
+void StdOutProgram(const ProgramRoot& program);
 
 struct ParsedCLIParameters 
 {
