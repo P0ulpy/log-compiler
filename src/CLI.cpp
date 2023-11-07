@@ -99,6 +99,11 @@ ParsedCLIParameters ProcessCLIArgs(int argc, const char** argv)
         std::cout << "Compiler std out set to verbose" << std::endl;
     }
 
+    if(inputParser.CmdOptionExists("--output") || inputParser.CmdOptionExists("-o"))
+    {
+        params.outputFilePath = inputParser.GetCmdOptions("--output", "-o");
+    }
+
     if(inputParser.CmdOptionExists("--format"))
     {
         auto format = inputParser["--format"];
