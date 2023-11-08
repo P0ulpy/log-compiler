@@ -30,7 +30,7 @@ void StdOutProgram(const ProgramRoot& program);
 struct ParsedCLIParameters 
 {
     std::string inputFilePath;
-    std::string outputFilePath;
+    std::string outputFilePath { "a.json" };
 };
 
 ParsedCLIParameters ProcessCLIArgs(int argc, const char** argv);

@@ -6,6 +6,7 @@
 #include "CLI.hpp"
 #include "Compilation/Tokenizer.hpp"
 #include "Compilation/Parser.hpp"
+#include "Compilation/Generation/JsonGenerator.hpp"
 
 #include <chrono>
 
@@ -41,6 +42,14 @@ int main(int argc, const char** argv)
 
     if(CompilerOptions::DebugMode)
         StdOutProgram(program);
+
+    JsonGenerator generator(program);
+
+    const auto& outputFile = generator.Generate();
+    {
+        std::fstream file(params.outputFilePath, std::ios::out);
+        file << outputFile.str();
+    }
     
     auto end = std::chrono::system_clock::now();
     auto elapsed = end - start;

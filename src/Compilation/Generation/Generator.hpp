@@ -8,9 +8,6 @@
 class Generator 
 {
 public:
-    Generator() = delete;
-    virtual ~Generator() = 0;
-
     Generator(ProgramRoot program)
         : m_program(std::move(program))
     {}
