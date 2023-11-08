@@ -12,6 +12,7 @@ public:
         : m_program(std::move(program))
     {}
 
+    virtual const char* GetFileExtention() const { return ".out"; };
     virtual const std::stringstream& Generate() = 0;
 
 protected:

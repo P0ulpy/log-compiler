@@ -47,6 +47,12 @@ int main(int argc, const char** argv)
 
     const auto& outputFile = generator.Generate();
     {
+        if(params.outputFilePath.empty())
+        {
+            params.outputFilePath = 'a';
+            params.outputFilePath += generator.GetFileExtention();
+        }
+
         std::fstream file(params.outputFilePath, std::ios::out);
         file << outputFile.str();
     }
