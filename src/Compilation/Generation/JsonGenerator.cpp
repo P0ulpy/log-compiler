@@ -23,7 +23,7 @@ const std::stringstream &JsonGenerator::Generate()
     return m_output;
 }
 
-void JsonGenerator::ProcessProgramContent(const decltype(ProgramRoot::content)& content)
+void JsonGenerator::ProcessProgramContent(const NodeContent& content)
 {
     for(size_t tokenIndex = 0; tokenIndex < content.size(); tokenIndex++)
     {

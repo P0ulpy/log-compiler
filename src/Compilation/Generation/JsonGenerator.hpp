@@ -17,7 +17,7 @@ public:
     const std::stringstream& Generate() final;
 
 private:
-    void ProcessProgramContent(const decltype(ProgramRoot::content)& content);
+    void ProcessProgramContent(const NodeContent& content);
 
     void BeginObject()                          { m_output << '{'; }
     void EndObject(bool comma = true)           { m_output << '}'; HasComma(comma); }

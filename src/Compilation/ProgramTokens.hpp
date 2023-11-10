@@ -44,16 +44,18 @@ using ProgramTokensTypes = TypeList<
 
 using ProgramTokenVariant = ProgramTokensTypes::ToVariant_t;
 
+using NodeContent = std::vector<ProgramTokenVariant>;
+
 struct NodeToken
 {
     TitleToken title;
-    std::vector<ProgramTokenVariant> content;
+    NodeContent content;
 };
 
 struct ProgramRoot
 {
     std::string name;
-    std::vector<ProgramTokenVariant> content;
+    NodeContent content;
 };
 
 std::ostream& operator<<(std::ostream& os, const NodeToken& token);
