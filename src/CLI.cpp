@@ -20,7 +20,7 @@ const char* OutputFormatsToCstr(CompilerOptions::OutputFormats tokenType)
 void StdOutInputFileInfo(const std::string_view& inputFilePath, const std::stringstream& fileContent)
 {
     std::cout 
-        << "Input file : " << inputFilePath << '\n'
+        << "Input file : " << inputFilePath
         << std::endl;
 }
 
@@ -90,7 +90,7 @@ ParsedCLIParameters ProcessCLIArgs(int argc, const char** argv)
 
     if(inputParser.CmdOptionExists("--debug"))
     {
-        CompilerOptions::DebugMode = true;
+        CompilerOptions::Debug = true;
         std::cout << "You are un debug mode" << std::endl;
     }
     if(inputParser.CmdOptionExists("--verbose"))

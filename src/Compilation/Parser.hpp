@@ -17,18 +17,20 @@ public:
     Parser(std::vector<Token> tokens);
 
     [[nodiscard]] ProgramRoot ParseProgram(const std::string_view& name = "program");
-    [[nodiscard]] std::optional<ProgramTokenVariant> ParseNext();
+    [[nodiscard]] const std::optional<ProgramTokenVariant> ParseNext();
 
 private:
+    [[nodiscard]] uint16_t ComputeTitleLevel(Token titleSymbolToken);
 
-    [[nodiscard]] inline bool CanPeek(int16_t offset = 0) const     { return m_cursor + offset < m_tokens.size(); }
-    [[nodiscard]] inline Token Peek(int16_t offset = 0) const       { return m_tokens[offset + m_cursor]; }
+    [[nodiscard]] inline const bool CanPeek(int16_t offset = 0) const     { return m_cursor + offset < m_tokens.size(); }
+    [[nodiscard]] inline const Token Peek(int16_t offset = 0) const       { return m_tokens[offset + m_cursor]; }
     [[nodiscard]] bool TryPeek(Token& outToken, int16_t offset = 0) const;
-    [[nodiscard]] std::optional<Token> TryPeek(int16_t offset = 0) const;
+    [[nodiscard]] const std::optional<Token> TryPeek(int16_t offset = 0) const;
+    [[nodiscard]] const std::optional<Token> TryPeek(TokenType type, int16_t offset = 0) const;
 
-    inline Token Consume()                                          { return m_tokens[m_cursor++]; }
-    [[nodiscard]] std::optional<Token> TryConsume(TokenType type);
-    [[nodiscard]] std::optional<Token> MustConsume(TokenType type, const std::string& errorMsg = "Syntax ERROR");
+    inline const Token Consume()                                          { return m_tokens[m_cursor++]; }
+    [[nodiscard]] const std::optional<Token> TryConsume(TokenType type);
+    [[nodiscard]] const std::optional<Token> MustConsume(TokenType type, const std::string& errorMsg = "Syntax ERROR");
 
 private:
     std::vector<Token> m_tokens;

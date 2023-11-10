@@ -10,7 +10,7 @@
 
 #include <chrono>
 
-bool CompilerOptions::DebugMode = false;
+bool CompilerOptions::Debug = false;
 bool CompilerOptions::Verbose = false;
 CompilerOptions::OutputFormats CompilerOptions::OutputFormat = CompilerOptions::OutputFormats::JSON;
 
@@ -23,6 +23,16 @@ int main(int argc, const char** argv)
     std::stringstream fileContent;
     {
         std::fstream file(params.inputFilePath, std::ios::in);
+        
+        if(!file.is_open())
+        {
+            std::cerr 
+                << "ERROR : Input file not found at `" << params.inputFilePath << "`\n" 
+                << ShortCLIUsageStr << std::endl;
+
+            exit(EXIT_FAILURE);
+        }
+
         fileContent << file.rdbuf();
     }
 
@@ -34,13 +44,13 @@ int main(int argc, const char** argv)
     Tokenizer tokenizer(fileStr);
     auto tokens = tokenizer.Tokenize();
 
-    if(CompilerOptions::DebugMode)
+    if(CompilerOptions::Debug && CompilerOptions::Verbose)
         StdOutTokens(tokens);
 
     Parser parser(tokens);
     auto program = parser.ParseProgram();
 
-    if(CompilerOptions::DebugMode)
+    if(CompilerOptions::Debug && CompilerOptions::Verbose)
         StdOutProgram(program);
 
     JsonGenerator generator(program);

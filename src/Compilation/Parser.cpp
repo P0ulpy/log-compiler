@@ -25,7 +25,7 @@ ProgramRoot Parser::ParseProgram(const std::string_view& name)
     return rootNode;
 }
 
-std::optional<ProgramTokenVariant> Parser::ParseNext()
+const std::optional<ProgramTokenVariant> Parser::ParseNext()
 {
     if(auto textLine = TryConsume(TokenType::TextLine)) 
     {
@@ -44,17 +44,7 @@ std::optional<ProgramTokenVariant> Parser::ParseNext()
     {
         // Title token
 
-        uint16_t titleLevel = titleSymbolOpt.value().value.size();
-
-        if(titleLevel == 0 || titleLevel > 6)
-        {
-            std::cerr 
-                << "Parsing ERROR : Invalid title level : `" << titleLevel 
-                << "` for token " << TokenError(titleSymbolOpt.value()) 
-                << std::endl;
-                
-            exit(EXIT_FAILURE);
-        }
+        uint16_t titleLevel = ComputeTitleLevel(titleSymbolOpt.value());
 
         TitleToken titleToken {
             .level = titleLevel
@@ -71,32 +61,17 @@ std::optional<ProgramTokenVariant> Parser::ParseNext()
 
         while(CanPeek())
         {
+            if(auto titleSymbolOpt = TryPeek(TokenType::TitleSymbol))
+            {
+                uint16_t innerTitleLevel = ComputeTitleLevel(titleSymbolOpt.value());
+
+                if(innerTitleLevel <= titleLevel)
+                    return nodeToken;
+            }
+
             if(auto programTokenOtp = ParseNext())
             {
-                bool isChildToken = true;
-
-                std::visit([&](auto&& programToken)
-                {
-                    using Type = std::decay_t<decltype(programTokenOtp.value())>;
-                    
-                    if constexpr (std::is_same_v<NodeToken, Type>)
-                    {
-                        if(static_cast<const NodeToken&>(programToken).title.level <= titleLevel)
-                        {
-                            isChildToken = false;
-                        }
-                    }
-                    
-                }, programTokenOtp.value());
-
-                if(isChildToken)
-                {
-                    nodeToken.content.push_back(programTokenOtp.value());
-                }
-                else
-                {
-                    return programTokenOtp;
-                }
+                nodeToken.content.push_back(programTokenOtp.value());
             }
         }
 
@@ -121,12 +96,29 @@ std::optional<ProgramTokenVariant> Parser::ParseNext()
     }
     else
     {
-        if(CompilerOptions::DebugMode)
+        if(CompilerOptions::Debug)
             std::cerr << "Parsing WARN : Unhandled Token, `" << Peek() << '`' << std::endl;
         
         Consume();
         return {};
     }
+}
+
+uint16_t Parser::ComputeTitleLevel(Token titleSymbolToken)
+{
+    uint16_t titleLevel = titleSymbolToken.value.size();
+
+    if(titleLevel == 0 || titleLevel > 6)
+    {
+        std::cerr 
+            << "Parsing ERROR : Invalid title level : `" << titleSymbolToken 
+            << "` for token " << TokenError(titleSymbolToken) 
+            << std::endl;
+            
+        exit(EXIT_FAILURE);
+    }
+
+    return titleLevel;
 }
 
 bool Parser::TryPeek(Token &outToken, int16_t offset) const
@@ -140,7 +132,7 @@ bool Parser::TryPeek(Token &outToken, int16_t offset) const
     return false;
 }
 
-std::optional<Token> Parser::TryPeek(int16_t offset) const
+const std::optional<Token> Parser::TryPeek(int16_t offset) const
 {
     if(CanPeek(offset))
     {
@@ -150,7 +142,18 @@ std::optional<Token> Parser::TryPeek(int16_t offset) const
     return {};
 }
 
-std::optional<Token> Parser::MustConsume(TokenType type, const std::string &errorMsg)
+const std::optional<Token> Parser::TryPeek(TokenType type, int16_t offset) const
+{
+    Token token;
+    if(TryPeek(token) && token.type == type)
+    {
+        return Peek(offset);
+    }
+
+    return {};
+}
+
+const std::optional<Token> Parser::MustConsume(TokenType type, const std::string &errorMsg)
 {
     if(auto tokenOpt = TryPeek())
     {
@@ -180,10 +183,9 @@ std::optional<Token> Parser::MustConsume(TokenType type, const std::string &erro
     return {};
 }
 
-std::optional<Token> Parser::TryConsume(TokenType type)
+const std::optional<Token> Parser::TryConsume(TokenType type)
 {
-    Token token;
-    if(TryPeek(token) && token.type == type)
+    if(TryPeek(type))
     {
         return Consume();
     }

@@ -9,7 +9,7 @@
 
 struct CompilerOptions
 {
-    static bool DebugMode;
+    static bool Debug;
     static bool Verbose;
 
     enum class OutputFormats { JSON, Markdown, C };

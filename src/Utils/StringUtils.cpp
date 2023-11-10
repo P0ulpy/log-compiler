@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-std::string FormatSpecialCharacters(const std::string& str)
+std::string FormatSpecialCharacters(const std::string_view& str)
 {
     std::stringstream builder;
 
@@ -11,9 +11,31 @@ std::string FormatSpecialCharacters(const std::string& str)
         switch(c)
         {
             case '\n' : builder << "\\n"; break;
+            case '\v' : builder << "\\v"; break;
             case '\r' : builder << "\\r"; break;
             case '\t' : builder << "\\t"; break;
+            default:
+                builder << c;
+        }
+    }
+
+    return builder.str();
+}
+
+std::string FormatToJsonString(const std::string_view& str)
+{
+    std::stringstream builder;
+
+    for(char c : str)
+    {
+        switch(c)
+        {
+            case '\n' : builder << "\\n"; break;
             case '\v' : builder << "\\v"; break;
+            case '\r' : builder << "\\r"; break;
+            case '\t' : builder << "\\t"; break;
+            case '"' : builder << "\\\""; break;
+            case '\\' : builder << "\\\\"; break;
             default:
                 builder << c;
         }
