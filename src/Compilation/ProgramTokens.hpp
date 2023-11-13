@@ -33,7 +33,7 @@ struct NodeToken;
 
 /** Tokens Types declaration
  * All Tokens types MUST be declared in the TypeList, 
- * otherwise it will not be processed correctly in rest of the systems
+ * otherwise they will not be processed correctly in rest of the systems
 */
 using ProgramTokensTypes = TypeList<
     TextBlockToken,

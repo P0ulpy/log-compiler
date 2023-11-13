@@ -25,6 +25,8 @@ const std::stringstream &JsonGenerator::Generate()
 
 void JsonGenerator::ProcessProgramContent(const NodeContent& content)
 {
+    JsonGeneratorVisitor tokenVisitor(*this);
+
     for(size_t tokenIndex = 0; tokenIndex < content.size(); tokenIndex++)
     {
         auto& tokenVariant = content[tokenIndex];
@@ -32,31 +34,8 @@ void JsonGenerator::ProcessProgramContent(const NodeContent& content)
 
         std::visit([&](auto&& token)
         {
-            using Type = std::decay_t<decltype(token)>;
+            tokenVisitor(token, isLast);
 
-            if constexpr (std::is_same_v<NodeToken, Type>) 
-            {
-                const auto& nodetoken = static_cast<const NodeToken&>(token);
-                std::stringstream builder;
-                builder << nodetoken.title;
-
-                BeginObject();
-                    Field("title");
-                    Literal<String>(builder.str());
-                                        
-                    Field("content");
-                    BeginTab();
-                        ProcessProgramContent(nodetoken.content);
-                    EndTab(false);
-                EndObject(!isLast);
-            }
-            else
-            {
-                std::stringstream builder;
-                builder << token;
-                Literal<String>(builder.str(), !isLast);
-            }
-        
         }, tokenVariant);
     }
 }
@@ -89,4 +68,53 @@ template <>
 void JsonGenerator::Literal<JsonGenerator::LiteralType::Bool>(const std::string_view &value, bool comma)
 {
     throw std::runtime_error("Not implemented");
+}
+
+
+
+JsonGeneratorVisitor::JsonGeneratorVisitor(JsonGenerator& generator)
+    : gen(generator)
+{}
+
+template <>
+void JsonGeneratorVisitor::operator()(const NodeToken &token, bool isLast)
+{
+    gen.BeginObject();
+        gen.Field("title");
+        gen.Literal<JsonGenerator::String>(token.title.text);
+        // gen.Field("level");
+        // gen.Literal<JsonGenerator::Integer>(token.title.level);
+                            
+        gen.Field("content");
+        gen.BeginTab();
+            gen.ProcessProgramContent(token.content);
+        gen.EndTab(false);
+
+    gen.EndObject(!isLast);
+}
+
+template <>
+void JsonGeneratorVisitor::operator()(const TextBlockToken &value, bool isLast)
+{
+    gen.BeginObject();
+
+        gen.Field("type");
+        gen.Literal<JsonGenerator::String>("plain-text");
+        gen.Field("text");
+        gen.Literal<JsonGenerator::String>(value.text, false);
+
+    gen.EndObject(!isLast);
+}
+
+template <>
+void JsonGeneratorVisitor::operator()(const QuoteBlockToken &value, bool isLast)
+{
+    gen.BeginObject();
+
+        gen.Field("type");
+        gen.Literal<JsonGenerator::String>("block-quotes");
+        gen.Field("text");
+        gen.Literal<JsonGenerator::String>(value.text, false);
+
+    gen.EndObject(!isLast);
 }

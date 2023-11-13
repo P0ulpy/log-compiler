@@ -4,6 +4,8 @@
 
 #include "Generator.hpp"
 
+class JsonGeneratorVisitor;
+
 class JsonGenerator : public Generator
 {
 public:
@@ -31,9 +33,35 @@ private:
 
     template <JsonGenerator::LiteralType type>
     void Literal(const std::string_view &value, bool comma = true) = delete;
+
+    friend class JsonGeneratorVisitor;
 };
 
 template <> void JsonGenerator::Literal<JsonGenerator::LiteralType::String>(const std::string_view& value, bool comma);
 template <> void JsonGenerator::Literal<JsonGenerator::LiteralType::Integer>(const std::string_view& value, bool comma);
 template <> void JsonGenerator::Literal<JsonGenerator::LiteralType::Float>(const std::string_view& value, bool comma);
 template <> void JsonGenerator::Literal<JsonGenerator::LiteralType::Bool>(const std::string_view& value, bool comma);
+
+class JsonGeneratorVisitor
+{
+public:
+    JsonGeneratorVisitor() = delete;
+    JsonGeneratorVisitor(JsonGenerator& generator);
+
+    template<typename TToken>
+    //requires(ProgramTokensTypes::Contains_v<TToken>))
+    void operator()(const TToken& value, bool isLast);
+
+private:
+    JsonGenerator& gen;
+};
+
+template <> void JsonGeneratorVisitor::operator()<NodeToken>(const NodeToken& value, bool isLast);
+template <> void JsonGeneratorVisitor::operator()<TextBlockToken>(const TextBlockToken& value, bool isLast);
+template <> void JsonGeneratorVisitor::operator()<QuoteBlockToken>(const QuoteBlockToken& value, bool isLast);
+
+template <class TToken>
+inline void JsonGeneratorVisitor::operator()(const TToken &value, bool isLast)
+{
+    throw std::runtime_error(std::string("Unhandled Token Type, please add a visitor specialisation for this type ") + typeid(value).name());
+}
