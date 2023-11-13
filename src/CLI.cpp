@@ -104,9 +104,9 @@ ParsedCLIParameters ProcessCLIArgs(int argc, const char** argv)
         params.outputFilePath = inputParser.GetCmdOptions("--output", "-o");
     }
 
-    if(inputParser.CmdOptionExists("--format"))
+    if(inputParser.CmdOptionExists("--format") || inputParser.CmdOptionExists("-f"))
     {
-        auto format = inputParser["--format"];
+        auto format = inputParser.GetCmdOptions("--format", "-f");
         std::transform(format.begin(), format.end(), format.begin(),
             [](unsigned char c){ return std::tolower(c); });
         

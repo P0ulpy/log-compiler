@@ -41,17 +41,30 @@ int main(int argc, const char** argv)
 
     auto fileStr = fileContent.str();
 
+    if(CompilerOptions::Debug)
+        std::cout << "Stating Tokenization phase" << std::endl;
+
     Tokenizer tokenizer(fileStr);
     auto tokens = tokenizer.Tokenize();
 
+    if(CompilerOptions::Debug)
+        std::cout << "Tokenization ended with `" << tokens.size() << "` token(s) found" << std::endl;
     if(CompilerOptions::Debug && CompilerOptions::Verbose)
         StdOutTokens(tokens);
+
+    if(CompilerOptions::Debug)
+        std::cout << "Stating Parsing phase" << std::endl;
 
     Parser parser(tokens);
     auto program = parser.ParseProgram();
 
+    if(CompilerOptions::Debug)
+        std::cout << "Parsing ended with no error" << std::endl;
     if(CompilerOptions::Debug && CompilerOptions::Verbose)
         StdOutProgram(program);
+
+    if(CompilerOptions::Debug)
+        std::cout << "Stating Generation phase for `" << OutputFormatsToCstr(CompilerOptions::OutputFormat) << '`' << std::endl;
 
     JsonGenerator generator(program);
 
@@ -66,6 +79,9 @@ int main(int argc, const char** argv)
         std::fstream file(params.outputFilePath, std::ios::out);
         file << outputFile.str();
     }
+
+    if(CompilerOptions::Debug || CompilerOptions::Verbose)
+        std::cout << "Sucessfully genereted output at `" << params.outputFilePath << '`' << std::endl;
     
     auto end = std::chrono::system_clock::now();
     auto elapsed = end - start;
