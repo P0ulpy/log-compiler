@@ -100,7 +100,7 @@ int main(int argc, const char** argv)
         file << outputFile.str();
     }
 
-    std::cout << "Sucessfully genereted output at `" << params.outputFilePath << '`' << std::endl;
+    std::cout << "Genereted output at `" << params.outputFilePath << '`' << std::endl;
     
     auto elapsedTotal = std::chrono::system_clock::now() - startTotal;
     std::cout
