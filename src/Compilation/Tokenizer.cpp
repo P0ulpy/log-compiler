@@ -1,6 +1,7 @@
 #include "Tokenizer.hpp"
 
 #include <regex>
+#include <../Utils/StringUtils.hpp>
 
 Tokenizer::Tokenizer(std::string source)
     : m_source(std::move(source))
@@ -34,7 +35,7 @@ std::vector<Token> Tokenizer::Tokenize()
         {
             tokens.push_back({
                 .type = TokenType::QuoteBlockLine,
-                .value = match[2],
+                .value = rTrimCopy(match[2]),
                 .ln = lineIndex,
                 .col = static_cast<uint32_t>(match.position(2)) + 1,
             });
@@ -50,7 +51,7 @@ std::vector<Token> Tokenizer::Tokenize()
 
             tokens.push_back({
                 .type = TokenType::TextLiteral,
-                .value = match[2],
+                .value = TrimCopy(match[2]),
                 .ln = lineIndex,
                 .col = static_cast<uint32_t>(match.position(2)) + 1,
             });
@@ -59,7 +60,7 @@ std::vector<Token> Tokenizer::Tokenize()
         {
             tokens.push_back({
                 .type = TokenType::TextLine,
-                .value = line,
+                .value = rTrimCopy(line),
                 .ln = lineIndex,
                 .col = 1U,
             });
