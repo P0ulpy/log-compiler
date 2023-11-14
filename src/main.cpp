@@ -16,7 +16,7 @@ CompilerOptions::OutputFormats CompilerOptions::OutputFormat = CompilerOptions::
 
 int main(int argc, const char** argv)
 {
-    auto start = std::chrono::system_clock::now();
+    auto startTotal = std::chrono::system_clock::now();
 
     auto params = ProcessCLIArgs(argc, argv);
 
@@ -42,26 +42,46 @@ int main(int argc, const char** argv)
     auto fileStr = fileContent.str();
 
     if(CompilerOptions::Debug)
-        std::cout << "Stating Tokenization phase" << std::endl;
+        std::cout << "Starting Tokenization phase" << std::endl;
+    auto startTokenization = std::chrono::system_clock::now();
 
     Tokenizer tokenizer(fileStr);
     auto tokens = tokenizer.Tokenize();
 
     if(CompilerOptions::Debug)
-        std::cout << "Tokenization ended with `" << tokens.size() << "` token(s) found" << std::endl;
-    if(CompilerOptions::Debug && CompilerOptions::Verbose)
-        StdOutTokens(tokens);
+    {
+        auto elapsedTokenization = std::chrono::system_clock::now() - startTokenization;
+
+        std::cout 
+            << "Tokenization ended with `" << tokens.size() << "` token(s) found in "
+            << std::chrono::duration_cast<std::chrono::seconds>(elapsedTokenization).count() << "s "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTokenization).count() << "ms"
+        << std::endl;
+
+        if(CompilerOptions::Verbose)
+            StdOutTokens(tokens);
+    }
 
     if(CompilerOptions::Debug)
-        std::cout << "Stating Parsing phase" << std::endl;
+        std::cout << "Starting Parsing phase" << std::endl;
+    auto startParsing = std::chrono::system_clock::now();
 
     Parser parser(tokens);
     auto program = parser.ParseProgram();
-
+    
     if(CompilerOptions::Debug)
-        std::cout << "Parsing ended with no error" << std::endl;
-    if(CompilerOptions::Debug && CompilerOptions::Verbose)
-        StdOutProgram(program);
+    {
+        auto elapsedParsing = std::chrono::system_clock::now() - startParsing;
+
+        std::cout 
+            << "Parsing ended with no error in "
+            << std::chrono::duration_cast<std::chrono::seconds>(elapsedParsing).count() << "s "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(elapsedParsing).count() << "ms"
+        << std::endl;
+
+        if(CompilerOptions::Verbose)
+            StdOutProgram(program);
+    }
 
     if(CompilerOptions::Debug)
         std::cout << "Stating Generation phase for `" << OutputFormatsToCstr(CompilerOptions::OutputFormat) << '`' << std::endl;
@@ -80,17 +100,13 @@ int main(int argc, const char** argv)
         file << outputFile.str();
     }
 
-    if(CompilerOptions::Debug || CompilerOptions::Verbose)
-        std::cout << "Sucessfully genereted output at `" << params.outputFilePath << '`' << std::endl;
+    std::cout << "Sucessfully genereted output at `" << params.outputFilePath << '`' << std::endl;
     
-    auto end = std::chrono::system_clock::now();
-    auto elapsed = end - start;
+    auto elapsedTotal = std::chrono::system_clock::now() - startTotal;
     std::cout
         << "Compiled in : "
-        << std::chrono::duration_cast<std::chrono::seconds>(elapsed).count()
-        << "s "
-        << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count()
-        << "ms"
+        << std::chrono::duration_cast<std::chrono::seconds>(elapsedTotal).count()<< "s "
+        << std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTotal).count()<< "ms"
     << std::endl;
 
     return EXIT_SUCCESS;
