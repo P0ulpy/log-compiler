@@ -11,7 +11,7 @@ const std::stringstream &JsonGenerator::Generate()
     BeginObject();
 
         Field("name");
-        Literal<String>(m_program.name);
+        LiteralString(m_program.name);
 
         Field("content");
         BeginTab();
@@ -45,32 +45,29 @@ inline void JsonGenerator::Field(const std::string_view &label)
     m_output << '"' << label << "\":";
 }
 
-template <>
-void JsonGenerator::Literal<JsonGenerator::LiteralType::String>(const std::string_view &value, bool comma)
+void JsonGenerator::LiteralString(const std::string_view& value, bool comma)
 {
     m_output << '\"' << FormatToJsonString(value) << '\"';
     HasComma(comma);
 }
 
-template <>
-void JsonGenerator::Literal<JsonGenerator::LiteralType::Integer>(const std::string_view &value, bool comma)
+void JsonGenerator::LiteralInteger(const int64_t& value, bool comma)
 {
-    throw std::runtime_error("Not implemented");
+    m_output << FormatToJsonString(std::to_string(value));
+    HasComma(comma);
 }
 
-template <>
-void JsonGenerator::Literal<JsonGenerator::LiteralType::Float>(const std::string_view &value, bool comma)
+void JsonGenerator::LiteralFloating(double value, bool comma)
 {
-    throw std::runtime_error("Not implemented");
+    m_output << FormatToJsonString(std::to_string(value));
+    HasComma(comma);
 }
 
-template <>
-void JsonGenerator::Literal<JsonGenerator::LiteralType::Bool>(const std::string_view &value, bool comma)
+void JsonGenerator::LiteralBoolean(bool value, bool comma)
 {
-    throw std::runtime_error("Not implemented");
+    m_output << FormatToJsonString(std::to_string(value));
+    HasComma(comma);
 }
-
-
 
 JsonGeneratorVisitor::JsonGeneratorVisitor(JsonGenerator& generator)
     : gen(generator)
@@ -81,9 +78,9 @@ void JsonGeneratorVisitor::operator()(const NodeToken &token, bool isLast)
 {
     gen.BeginObject();
         gen.Field("title");
-        gen.Literal<JsonGenerator::String>(token.title.text);
-        // gen.Field("level");
-        // gen.Literal<JsonGenerator::Integer>(token.title.level);
+        gen.LiteralString(token.title.text);
+        gen.Field("level");
+        gen.LiteralInteger(token.title.level);
                             
         gen.Field("content");
         gen.BeginTab();
@@ -99,9 +96,9 @@ void JsonGeneratorVisitor::operator()(const TextBlockToken &value, bool isLast)
     gen.BeginObject();
 
         gen.Field("type");
-        gen.Literal<JsonGenerator::String>("plain-text");
+        gen.LiteralString("plain-text");
         gen.Field("text");
-        gen.Literal<JsonGenerator::String>(value.text, false);
+        gen.LiteralString(value.text, false);
 
     gen.EndObject(!isLast);
 }
@@ -112,9 +109,9 @@ void JsonGeneratorVisitor::operator()(const QuoteBlockToken &value, bool isLast)
     gen.BeginObject();
 
         gen.Field("type");
-        gen.Literal<JsonGenerator::String>("block-quotes");
+        gen.LiteralString("block-quotes");
         gen.Field("text");
-        gen.Literal<JsonGenerator::String>(value.text, false);
+        gen.LiteralString(value.text, false);
 
     gen.EndObject(!isLast);
 }

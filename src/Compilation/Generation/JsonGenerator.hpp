@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string_view>
+#include <concepts>
 
 #include "Generator.hpp"
 
@@ -31,16 +32,13 @@ private:
 
     void Field(const std::string_view& label);
 
-    template <JsonGenerator::LiteralType type>
-    void Literal(const std::string_view &value, bool comma = true) = delete;
+    void LiteralString(const std::string_view& value, bool comma = true);
+    void LiteralInteger(const int64_t& value, bool comma = true);
+    void LiteralFloating(double value, bool comma = true);
+    void LiteralBoolean(bool value, bool comma = true);
 
     friend class JsonGeneratorVisitor;
 };
-
-template <> void JsonGenerator::Literal<JsonGenerator::LiteralType::String>(const std::string_view& value, bool comma);
-template <> void JsonGenerator::Literal<JsonGenerator::LiteralType::Integer>(const std::string_view& value, bool comma);
-template <> void JsonGenerator::Literal<JsonGenerator::LiteralType::Float>(const std::string_view& value, bool comma);
-template <> void JsonGenerator::Literal<JsonGenerator::LiteralType::Bool>(const std::string_view& value, bool comma);
 
 class JsonGeneratorVisitor
 {
