@@ -77,6 +77,7 @@ template <>
 void JsonGeneratorVisitor::operator()(const NodeToken &token, bool isLast)
 {
     gen.BeginObject();
+
         gen.Field("title");
         gen.LiteralString(token.title.text);
         gen.Field("level");
@@ -86,7 +87,7 @@ void JsonGeneratorVisitor::operator()(const NodeToken &token, bool isLast)
         gen.BeginTab();
             gen.ProcessProgramContent(token.content);
         gen.EndTab(false);
-
+        
     gen.EndObject(!isLast);
 }
 

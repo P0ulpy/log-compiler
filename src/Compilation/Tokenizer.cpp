@@ -1,7 +1,8 @@
 #include "Tokenizer.hpp"
 
 #include <regex>
-#include <../Utils/StringUtils.hpp>
+
+#include "../Utils/StringUtils.hpp"
 
 Tokenizer::Tokenizer(std::string source)
     : m_source(std::move(source))

@@ -47,7 +47,6 @@ public:
     JsonGeneratorVisitor(JsonGenerator& generator);
 
     template<typename TToken>
-    //requires(ProgramTokensTypes::Contains_v<TToken>))
     void operator()(const TToken& value, bool isLast);
 
 private:
