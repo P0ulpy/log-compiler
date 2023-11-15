@@ -78,6 +78,9 @@ void JsonGeneratorVisitor::operator()(const NodeToken &token, bool isLast)
 {
     gen.BeginObject();
 
+        gen.Field("type");
+        gen.LiteralString("section");
+        
         gen.Field("title");
         gen.LiteralString(token.title.text);
         gen.Field("level");
