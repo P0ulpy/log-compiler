@@ -5,6 +5,11 @@ project(log-compiler)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O6")
 
-set(TARGET_NAME log-compiler-executable)
+set(TARGET_NAME log-compiler)
 
-add_subdirectory(src)
+file(GLOB_RECURSE SOURCES
+    "src/*.hpp"
+    "src/*.cpp"
+)
+
+add_executable (${TARGET_NAME} ${SOURCES})

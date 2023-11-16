@@ -1,2 +1,2 @@
 #!/bin/sh
-cmake --build out/CMake/Release --config Release -j
+cmake --build out/Release --config Release -j

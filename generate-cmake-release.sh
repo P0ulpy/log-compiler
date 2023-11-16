@@ -1,2 +1,2 @@
 #!/bin/sh
-cmake -S ./ -B out/CMake/Release -DCMAKE_BUILD_TYPE=Release
+cmake -S ./ -B out/Release -DCMAKE_BUILD_TYPE=Release

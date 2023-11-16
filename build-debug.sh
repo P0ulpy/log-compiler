@@ -1,2 +1,2 @@
 #!/bin/sh
-cmake --build out/CMake/Debug --config Debug -j
+cmake --build out/Debug --config Debug -j
