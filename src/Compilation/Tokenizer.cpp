@@ -13,10 +13,11 @@ std::vector<Token> Tokenizer::Tokenize()
     std::vector<Token> tokens;
     
     uint32_t lineIndex = 1;
-    std::string line;
     
-    while (TryPeek(line))
-    {            
+    while (CanPeek())
+    {
+        std::string line = Consume();
+
         const static std::regex TitleRgx { "(#{1,6}) (.*)" };
         const static std::regex BlockquoteRgx { "(>{1} )(.*)" };
         // NOTE : Maybe look for a more efficient regex
@@ -26,6 +27,10 @@ std::vector<Token> Tokenizer::Tokenize()
 
         if(line.size() == 0 || !std::regex_search(line, NotEmptyLineRgx))
         {
+            // continue if 
+            if(tokens.size() > 0 && tokens.back().type == TokenType::EmptyLine)
+                continue;
+            
             tokens.push_back({
                 .type = TokenType::EmptyLine,
                 .ln = lineIndex,
@@ -67,16 +72,20 @@ std::vector<Token> Tokenizer::Tokenize()
             });
         }
         
-        Consume();
         ++lineIndex;
     }
 
     return tokens;
 }
 
+bool Tokenizer::CanPeek() const
+{
+    return m_cursor < m_source.size();
+}
+
 bool Tokenizer::TryPeek(std::string &line) const
 {
-    if (m_cursor >= m_source.size())
+    if (CanPeek())
     {
         return false;
     }
@@ -96,18 +105,24 @@ bool Tokenizer::TryPeek(std::string &line) const
     return true;
 }
 
-void Tokenizer::Consume()
+std::string Tokenizer::Consume()
 {
     auto endOfLineInfo = FindEndOfLine(m_cursor);
     
+    std::string out;
+
     if (endOfLineInfo.index != std::string::npos)
     {
+        out = m_source.substr(m_cursor, endOfLineInfo.index - m_cursor);
         m_cursor = endOfLineInfo.index + endOfLineInfo.terminatorOffset;
     } 
     else 
     {
+        out = m_source.substr(m_cursor);
         m_cursor = m_source.size();
     }
+
+    return out;
 }
 
 Tokenizer::EndOfLineInfo Tokenizer::FindEndOfLine(size_t startPos) const

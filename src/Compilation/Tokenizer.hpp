@@ -13,8 +13,9 @@ public:
     std::vector<Token> Tokenize();
 
 private:
-    [[nodiscard]] bool TryPeek(std::string& line) const;
-    void Consume();
+    bool CanPeek() const;
+    bool TryPeek(std::string& line) const;
+    std::string Consume();
 
     struct EndOfLineInfo { size_t index = 0; uint16_t terminatorOffset = 0; };
     [[nodiscard]] EndOfLineInfo FindEndOfLine(size_t startPos = 0) const;
