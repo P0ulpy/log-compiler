@@ -83,9 +83,23 @@ const std::optional<ProgramTokenVariant> Parser::ParseNext()
             .text = quoteLine.value().value
         };
 
-        while(auto subQuoteLine = TryConsume(TokenType::QuoteBlockLine))
+        Token& previousToken = quoteLine.value();
+
+        while(const auto& subQuoteLine = TryConsume(TokenType::QuoteBlockLine))
         {
-            quoteBlockToken.text += '\n' + subQuoteLine.value().value;
+            auto& tk = subQuoteLine.value();
+            
+            char preLineCharacter = ' ';
+
+            if(previousToken.value.ends_with('\\'))
+            {
+                quoteBlockToken.text.pop_back();
+                preLineCharacter = '\n';
+            }
+            
+            quoteBlockToken.text += preLineCharacter + subQuoteLine.value().value;
+
+            previousToken = subQuoteLine.value();
         }
 
         return quoteBlockToken;
@@ -104,7 +118,7 @@ const std::optional<ProgramTokenVariant> Parser::ParseNext()
     }
 }
 
-uint16_t Parser::ComputeTitleLevel(Token titleSymbolToken)
+uint16_t Parser::ComputeTitleLevel(const Token& titleSymbolToken)
 {
     uint16_t titleLevel = titleSymbolToken.value.size();
 

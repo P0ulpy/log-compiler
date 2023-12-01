@@ -20,7 +20,7 @@ public:
     [[nodiscard]] const std::optional<ProgramTokenVariant> ParseNext();
 
 private:
-    [[nodiscard]] uint16_t ComputeTitleLevel(Token titleSymbolToken);
+    [[nodiscard]] uint16_t ComputeTitleLevel(const Token& titleSymbolToken);
 
     [[nodiscard]] inline const bool CanPeek(int16_t offset = 0) const     { return m_cursor + offset < m_tokens.size(); }
     [[nodiscard]] inline const Token Peek(int16_t offset = 0) const       { return m_tokens[offset + m_cursor]; }

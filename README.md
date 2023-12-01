@@ -151,16 +151,17 @@ CloseWindow();
 Here's the grammar of the input file format recognized by the Log Compiler in PEG (Parsing Expression Grammar) format:
 
 ```peg
-InputFile       <- Entry*
-Entry           <- TitleSection / Blockquote / Line / EmptyLine
-TitleSection    <- TitleLevel Text
-TitleLevel      <- "#" ("#" / "#" / "#" / "#" / "#" / "#")?
-Blockquote      <- BlockquoteLine+
-BlockquoteLine  <- ">" Line
-Line            <- (!EndLine .)* EndLine
-Text            <- (!EndLine .)+
-EmptyLine       <- (" " / "\n" / "\r" / "\t")*
-EndLine         <- "\n" / "\r" / "\r\n"
+InputFile           <- Entry*
+Entry               <- TitleSection / Blockquote / Line / EmptyLine
+TitleSection        <- TitleLevel Text
+TitleLevel          <- "#" ("#" / "#" / "#" / "#" / "#" / "#")?
+Blockquote          <- BlockquoteLine+
+BlockquoteLine      <- ">" Line BlockquoteLineEnd?
+BlockquoteLineEnd   <- "\"
+Line                <- (!EndLine .)* EndLine
+Text                <- (!EndLine .)+
+EmptyLine           <- (" " / "\n" / "\r" / "\t")*
+EndLine             <- "\n" / "\r" / "\r\n"
 ```
 
 In this PEG-based grammar:
@@ -178,6 +179,8 @@ In this PEG-based grammar:
   - Consists of one or more `BlockquoteLine` elements.
 - `BlockquoteLine`:
   - Starts with `>` and is followed by a `Line` of text.
+- `BlockquoteLineEnd`:
+  - A `\` character at the extact end character of a `BlockquoteLine`, represent a Newline character
 - `Line`:
   - Represents plain lines of text without special markers.
 - `Text`:

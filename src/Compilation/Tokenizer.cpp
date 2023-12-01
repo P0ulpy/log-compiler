@@ -27,7 +27,7 @@ std::vector<Token> Tokenizer::Tokenize()
 
         if(line.size() == 0 || !std::regex_search(line, NotEmptyLineRgx))
         {
-            // continue if 
+            // Skip Multiple empty line
             if(tokens.size() > 0 && tokens.back().type == TokenType::EmptyLine)
                 continue;
             
