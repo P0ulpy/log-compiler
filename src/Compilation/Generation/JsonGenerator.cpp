@@ -80,17 +80,17 @@ void JsonGeneratorVisitor::operator()(const NodeToken &token, bool isLast)
 
         gen.Field("type");
         gen.LiteralString("section");
-        
+
         gen.Field("title");
         gen.LiteralString(token.title.text);
         gen.Field("level");
         gen.LiteralInteger(token.title.level);
-                            
+
         gen.Field("content");
         gen.BeginTab();
             gen.ProcessProgramContent(token.content);
         gen.EndTab(false);
-        
+
     gen.EndObject(!isLast);
 }
 

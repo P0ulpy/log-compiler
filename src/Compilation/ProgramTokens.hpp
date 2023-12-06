@@ -7,6 +7,11 @@
 #include "../Utils/TypeList.hpp"
 #include "../Utils/StringUtils.hpp"
 
+/** TODO :
+ * In Every tokens who have a body with multiple lines (`TextBlockToken` and `QuoteBlockToken`)
+ * should be truned into a std::vector<std::string> instead of a std::string separated by '\n'
+ * This will provide mode flexibility for generation
+ */ 
 struct TextBlockToken
 {
     std::string text;

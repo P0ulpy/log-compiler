@@ -25,6 +25,9 @@ ProgramRoot Parser::ParseProgram(const std::string_view& name)
     return rootNode;
 }
 
+/** TODO :
+ * Introduce some kind of a visitor for TryConsume() like in Generation 
+*/
 const std::optional<ProgramTokenVariant> Parser::ParseNext()
 {
     if(auto textLine = TryConsume(TokenType::TextLine)) 
@@ -33,6 +36,7 @@ const std::optional<ProgramTokenVariant> Parser::ParseNext()
             .text = textLine.value().value
         };
 
+        // TODO : Add the same concept as quoteblock for line end (handle \ at end of line)
         while(auto subTextLine = TryConsume(TokenType::TextLine))
         {
             textBlockToken.text += ' ' + subTextLine.value().value;
