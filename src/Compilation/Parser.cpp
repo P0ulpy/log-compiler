@@ -37,6 +37,7 @@ const std::optional<ProgramTokenVariant> Parser::ParseNext()
         };
 
         // TODO : Add the same concept as quoteblock for line end (handle \ at end of line)
+        // \ must be handled only if the next line is not an empty line
         while(auto subTextLine = TryConsume(TokenType::TextLine))
         {
             textBlockToken.text += ' ' + subTextLine.value().value;
