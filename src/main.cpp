@@ -98,12 +98,16 @@ int main(int argc, const char** argv)
     switch(CompilerOptions::OutputFormat)
     {
         case CompilerOptions::OutputFormats::Markdown :
+        {
             Generate<MdGenerator>(program, params.outputFilePath);
             break;
+        }
         case CompilerOptions::OutputFormats::C :
+        {
             std::cerr << "ERROR : C compiler output is no implemented for now !" << std::endl;
             exit(1);
             break;
+        }
         case CompilerOptions::OutputFormats::JSON :
         default:
             Generate<JsonGenerator>(program, params.outputFilePath);

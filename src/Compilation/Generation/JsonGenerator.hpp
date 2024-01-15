@@ -4,6 +4,7 @@
 #include <concepts>
 
 #include "Generator.hpp"
+#include "../../Utils/Assertion.hpp"
 
 class JsonGeneratorVisitor;
 
@@ -60,5 +61,5 @@ template <> void JsonGeneratorVisitor::operator()<QuoteBlockToken>(const QuoteBl
 template <class TToken>
 inline void JsonGeneratorVisitor::operator()(const TToken &value, bool isLast)
 {
-    throw std::runtime_error(std::string("Unhandled Token Type, please add a visitor specialisation for this type ") + typeid(value).name());
+    static_assert(assert_false_v<TToken>, "Unhandled Token Type, please add a visitor specialisation for this type");
 }

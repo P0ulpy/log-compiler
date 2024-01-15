@@ -19,6 +19,8 @@ struct TextBlockToken
 
 std::ostream& operator<<(std::ostream& os, const TextBlockToken& token);
 
+// Note : TitleToken is the only token who can not be inside a NodeContent.
+// It should not be add to ProgramTokensTypes TypeList, this would cause crash in Visitors type checking 
 struct TitleToken
 {
     uint16_t level = 0;
@@ -42,7 +44,6 @@ struct NodeToken;
 */
 using ProgramTokensTypes = TypeList<
     TextBlockToken,
-    TitleToken,
     QuoteBlockToken,
     NodeToken
 >;

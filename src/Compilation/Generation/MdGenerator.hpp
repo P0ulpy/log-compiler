@@ -4,6 +4,7 @@
 #include <concepts>
 
 #include "Generator.hpp"
+#include "../../Utils/Assertion.hpp"
 
 class MdGeneratorVisitor;
 
@@ -17,7 +18,7 @@ public:
     const std::stringstream& Generate() final;
 
 private:
-    friend class JsonGeneratorVisitor;
+    friend class MdGeneratorVisitor;
 };
 
 class MdGeneratorVisitor
@@ -40,5 +41,5 @@ template <> void MdGeneratorVisitor::operator()<QuoteBlockToken>(const QuoteBloc
 template <class TToken>
 inline void MdGeneratorVisitor::operator()(const TToken &value)
 {
-    throw std::runtime_error(std::string("Unhandled Token Type, please add a visitor specialisation for this type ") + typeid(value).name());
+    static_assert(assert_false_v<TToken>, "Unhandled Token Type, please add a visitor specialisation for this type");
 }
