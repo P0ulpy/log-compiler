@@ -17,6 +17,12 @@ public:
 
     const std::stringstream& Generate() final;
 
+private: 
+    void ProcesssProgramContent(const NodeContent& content);
+    void Append(const std::string_view& value);
+    void AppendLine(const std::string_view& value);
+    void AppendBlock(const std::string_view& value);
+
 private:
     friend class MdGeneratorVisitor;
 };
