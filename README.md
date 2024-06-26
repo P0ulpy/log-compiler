@@ -1,3 +1,5 @@
+[![CMake Build on multiple platforms](https://github.com/P0ulpy/log-compiler/actions/workflows/cmake-build-multi-platform.yml/badge.svg)](https://github.com/P0ulpy/log-compiler/actions/workflows/cmake-build-multi-platform.yml)
+
 # Log Compiler
 
 > Imagine a world with no limits and endless possibilities. In this marvelous world, it must have a Markdown compiler, right?... right? <br>
