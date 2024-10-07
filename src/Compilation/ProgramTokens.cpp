@@ -5,7 +5,13 @@
 
 std::ostream &operator<<(std::ostream &os, const TextBlockToken &token)
 {
-    os << "TextBlockToken : `" << FormatSpecialCharacters(token.text) << '`';
+    os << "TextBlockToken lines : [";    
+    for(const auto& line : token.lines)
+    {
+        os << "`" << FormatSpecialCharacters(line) << "`, ";
+    }
+    os << "]";
+
     return os;
 }
 
@@ -17,7 +23,13 @@ std::ostream &operator<<(std::ostream &os, const TitleToken &token)
 
 std::ostream &operator<<(std::ostream &os, const QuoteBlockToken &token)
 {
-    os << "QuoteBlockToken : `" << FormatSpecialCharacters(token.text) << '`';
+    os << "QuoteBlockToken lines : [";    
+    for(const auto& line : token.lines)
+    {
+        os << "`" << FormatSpecialCharacters(line) << "`, ";
+    }
+    os << "]";
+
     return os;
 }
 

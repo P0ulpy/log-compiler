@@ -1,0 +1,292 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"extensions": {
+        "recommendations": [
+            "ms-vscode.cpptools",
+            "ms-vscode.cmake-tools",
+        ]
+    },
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name" : "(vsdbg) Debug LogCompiller",
+				"type": "cppvsdbg",
+				"request": "launch",
+				"preLaunchTask": "CMake build Debug",
+				"program": "${workspaceFolder}/out/Debug/Debug/log-compiler.exe",
+				"args": [ "out/input.md", "-o", "out/out.json", "--debug", "--verbose" ],
+				"cwd": "${workspaceFolder}",
+				// "environment": [
+				// 	{
+				// 		// add the directory where our target was built to the PATHs
+				// 		// it gets resolved by CMake Tools:
+				// 		"name": "PATH",
+				// 		"value": "${env:PATH}:${command:cmake.getLaunchTargetDirectory}"
+				// 	}
+				// ],
+				"requireExactSource": false,
+				"console": "integratedTerminal"
+			},
+			{
+				"name" : "(vsdbg) Release LogCompiller",
+				"type": "cppvsdbg",
+				"request": "launch",
+				"preLaunchTask": "CMake build Release",
+				"program": "${workspaceFolder}/out/Release/Release/log-compiler.exe",
+				"args": [ "out/input.md", "-o", "out/out.json", "--debug", "--verbose" ],
+				"cwd": "${workspaceFolder}",
+				// "environment": [
+				// 	{
+				// 		// add the directory where our target was built to the PATHs
+				// 		// it gets resolved by CMake Tools:
+				// 		"name": "PATH",
+				// 		"value": "${env:PATH}:${command:cmake.getLaunchTargetDirectory}"
+				// 	}
+				// ],
+				"requireExactSource": false,
+				"console": "integratedTerminal"
+			},
+			{
+				"name": "(gdb) Debug LogCompiller",
+				"type": "cppdbg",
+				"request": "launch",
+				"preLaunchTask": "CMake build Debug",
+				"program": "${command:cmake.launchTargetPath}",
+				"args": [ "out/input.md", "-o", "out/out.json", "--debug", "--verbose" ],
+				"cwd": "${workspaceFolder}",
+				"environment": [
+					{
+						// add the directory where our target was built to the PATHs
+						// it gets resolved by CMake Tools:
+						"name": "PATH",
+						"value": "${env:PATH}:${command:cmake.getLaunchTargetDirectory}"
+					}
+				],
+				"MIMode": "gdb",
+				"miDebuggerPath": "gdb.exe",
+				"externalConsole": false,
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					}
+				]
+			},
+			{
+				"name": "(gdb) Release LogCompiller",
+				"type": "cppdbg",
+				"request": "launch",
+				"preLaunchTask": "CMake build Release",
+				"program": "${command:cmake.launchTargetPath}",
+				"args": [ "out/input.md", "-o", "out/out.json", "--debug", "--verbose" ],
+				"cwd": "${workspaceFolder}",
+				"environment": [
+					{
+						// add the directory where our target was built to the PATHs
+						// it gets resolved by CMake Tools:
+						"name": "PATH",
+						"value": "${env:PATH}:${command:cmake.getLaunchTargetDirectory}"
+					}
+				],
+				"MIMode": "gdb",
+				"miDebuggerPath": "gdb.exe",
+				"externalConsole": false,
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					}
+				]
+			},
+		],
+		"compounds": []
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+                "label": "CMake build Debug",
+                "command": "${workspaceFolder}/scripts/build-debug.bat",
+                "type": "shell",
+                "args": [],
+                "presentation": {
+                    "reveal": "always"
+                },
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "CMake build Release",
+                "command": "${workspaceFolder}/scripts/build-release.bat",
+                "type": "shell",
+                "presentation": {
+                    "reveal": "always"
+                },
+                "group": "build"
+            }
+		]
+	},
+	"settings": {
+		"cmake.autoSelectActiveFolder": false,
+        "cmake.configureOnOpen": false,
+        "cmake.buildTask": true,
+        "cmake.buildBeforeRun": true,
+        "cmake.buildDirectory": "${workspaceFolder}/out/${variant:buildType}",
+		"cmake.generator": "Visual Studio 17 2022",
+        "cmake.defaultVariants": {
+            "buildType": {
+                "default": "Debug",
+                "choices": {
+                    "Debug": {
+                        "short": "Debug",
+                        "buildType": "Debug"
+                    },
+                    "Release": {
+                        "short": "Release",
+                        "buildType": "Release"
+                    }
+                }
+            }
+        },
+		"files.associations": {
+			"*.ejs": "html",
+			"*.m": "cpp",
+			"random": "cpp",
+			"array": "cpp",
+			"vector": "cpp",
+			"cmath": "cpp",
+			"*.tcc": "cpp",
+			"cctype": "cpp",
+			"clocale": "cpp",
+			"cstdarg": "cpp",
+			"cstddef": "cpp",
+			"cstdio": "cpp",
+			"cstdlib": "cpp",
+			"cstring": "cpp",
+			"ctime": "cpp",
+			"cwchar": "cpp",
+			"cwctype": "cpp",
+			"exception": "cpp",
+			"fstream": "cpp",
+			"iosfwd": "cpp",
+			"iostream": "cpp",
+			"istream": "cpp",
+			"limits": "cpp",
+			"memory": "cpp",
+			"new": "cpp",
+			"ostream": "cpp",
+			"sstream": "cpp",
+			"stdexcept": "cpp",
+			"streambuf": "cpp",
+			"typeinfo": "cpp",
+			"atomic": "cpp",
+			"cstdint": "cpp",
+			"deque": "cpp",
+			"list": "cpp",
+			"unordered_map": "cpp",
+			"algorithm": "cpp",
+			"functional": "cpp",
+			"iterator": "cpp",
+			"map": "cpp",
+			"memory_resource": "cpp",
+			"numeric": "cpp",
+			"string": "cpp",
+			"string_view": "cpp",
+			"system_error": "cpp",
+			"tuple": "cpp",
+			"type_traits": "cpp",
+			"utility": "cpp",
+			"initializer_list": "cpp",
+			"cinttypes": "cpp",
+			"bit": "cpp",
+			"compare": "cpp",
+			"concepts": "cpp",
+			"ios": "cpp",
+			"stack": "cpp",
+			"xfacet": "cpp",
+			"xhash": "cpp",
+			"xiosbase": "cpp",
+			"xlocale": "cpp",
+			"xlocinfo": "cpp",
+			"xlocnum": "cpp",
+			"xmemory": "cpp",
+			"xstddef": "cpp",
+			"xstring": "cpp",
+			"xtr1common": "cpp",
+			"xtree": "cpp",
+			"xutility": "cpp",
+			"iomanip": "cpp"
+		},
+		"C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+		"C_Cpp_Runner.cCompilerPath": "gcc",
+		"C_Cpp_Runner.cppCompilerPath": "g++",
+		"C_Cpp_Runner.debuggerPath": "gdb",
+		"C_Cpp_Runner.cStandard": "",
+		"C_Cpp_Runner.cppStandard": "",
+		"C_Cpp_Runner.msvcBatchPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvarsall.bat",
+		"C_Cpp_Runner.useMsvc": false,
+		"C_Cpp_Runner.warnings": [
+			"-Wall",
+			"-Wextra",
+			"-Wpedantic",
+			"-Wshadow",
+			"-Wformat=2",
+			"-Wcast-align",
+			"-Wconversion",
+			"-Wsign-conversion",
+			"-Wnull-dereference"
+		],
+		"C_Cpp_Runner.msvcWarnings": [
+			"/W4",
+			"/permissive-",
+			"/w14242",
+			"/w14287",
+			"/w14296",
+			"/w14311",
+			"/w14826",
+			"/w44062",
+			"/w44242",
+			"/w14905",
+			"/w14906",
+			"/w14263",
+			"/w44265",
+			"/w14928"
+		],
+		"C_Cpp_Runner.enableWarnings": true,
+		"C_Cpp_Runner.warningsAsError": false,
+		"C_Cpp_Runner.compilerArgs": [],
+		"C_Cpp_Runner.linkerArgs": [],
+		"C_Cpp_Runner.includePaths": [],
+		"C_Cpp_Runner.includeSearch": [
+			"*",
+			"**/*"
+		],
+		"C_Cpp_Runner.excludeSearch": [
+			"**/build",
+			"**/build/**",
+			"**/out",
+			"**/out/**",
+			"**/.*",
+			"**/.*/**",
+			"**/.vscode",
+			"**/.vscode/**"
+		],
+		"C_Cpp_Runner.useAddressSanitizer": false,
+		"C_Cpp_Runner.useUndefinedSanitizer": false,
+		"C_Cpp_Runner.useLeakSanitizer": false,
+		"C_Cpp_Runner.showCompilationTime": false,
+		"C_Cpp_Runner.useLinkTimeOptimization": false,
+		"C_Cpp_Runner.msvcSecureNoWarnings": false,
+		"dotnet.defaultSolution": "disable",
+	}
+}

@@ -14,7 +14,7 @@ class Parser
 {
 public:
     Parser() = delete;
-    Parser(std::vector<Token> tokens);
+    Parser(std::vector<Token>& tokens);
 
     [[nodiscard]] ProgramRoot ParseProgram(const std::string_view& name = "program");
     [[nodiscard]] const std::optional<ProgramTokenVariant> ParseNext();
@@ -33,6 +33,6 @@ private:
     [[nodiscard]] const std::optional<Token> MustConsume(TokenType type, const std::string& errorMsg = "Syntax ERROR");
 
 private:
-    std::vector<Token> m_tokens;
+    std::vector<Token>& m_tokens;
     size_t m_cursor = 0;
 };

@@ -2,7 +2,7 @@
 
 #include "MdGenerator.hpp"
 
-MdGenerator::MdGenerator(ProgramRoot program)
+MdGenerator::MdGenerator(ProgramRoot& program)
     : Generator(program)
 {}
 
@@ -63,24 +63,20 @@ void MdGeneratorVisitor::operator()(const NodeToken &token)
 template <>
 void MdGeneratorVisitor::operator()(const TextBlockToken &value)
 {
-    gen.AppendBlock(value.text);
+    for (const auto& line : value.lines)
+    {
+        gen.AppendLine(line);
+    }
+
+    gen.Append("\n");
 }
 
 template <>
 void MdGeneratorVisitor::operator()(const QuoteBlockToken &value)
 {
-    using namespace std::literals;
-
-    // NOTE : Will be replaced with a lines enumeration when QuoteBlockToken type will evolve (cf: ProgramTokens.hpp TextBlockToken comentary)
-    auto text = value.text;
-
-    std::stringstream content;
-    content << text;
-
-    std::string line;
-    for (std::string line; std::getline(content, line);)
+    for (const auto& line : value.lines)
     {
-        std::string blockquoteLine = "> "s + line;
+        std::string blockquoteLine = "> " + line;
         gen.AppendLine(blockquoteLine);
     }
 

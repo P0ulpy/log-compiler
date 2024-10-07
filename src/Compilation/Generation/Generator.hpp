@@ -8,8 +8,8 @@
 class Generator 
 {
 public:
-    Generator(ProgramRoot program)
-        : m_program(std::move(program))
+    Generator(ProgramRoot& program)
+        : m_program(program)
     {}
 
     virtual const char* GetFileExtention() const { return ".out"; };
@@ -17,5 +17,5 @@ public:
 
 protected:
     std::stringstream m_output;
-    ProgramRoot m_program;
+    ProgramRoot& m_program;
 };

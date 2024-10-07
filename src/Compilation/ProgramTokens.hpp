@@ -7,14 +7,11 @@
 #include "../Utils/TypeList.hpp"
 #include "../Utils/StringUtils.hpp"
 
-/** TODO :
- * In Every tokens who have a body with multiple lines (`TextBlockToken` and `QuoteBlockToken`)
- * should be truned into a std::vector<std::string> instead of a std::string separated by '\n'
- * This will provide mode flexibility for generation
- */ 
+using TextLine = std::string;
+
 struct TextBlockToken
 {
-    std::string text;
+    std::vector<TextLine> lines;
 };
 
 std::ostream& operator<<(std::ostream& os, const TextBlockToken& token);
@@ -24,14 +21,14 @@ std::ostream& operator<<(std::ostream& os, const TextBlockToken& token);
 struct TitleToken
 {
     uint16_t level = 0;
-    std::string text;
+    TextLine text;
 };
 
 std::ostream& operator<<(std::ostream& os, const TitleToken& token);
 
 struct QuoteBlockToken
 {
-    std::string text;
+    std::vector<TextLine> lines;
 };
 
 std::ostream& operator<<(std::ostream& os, const QuoteBlockToken& token);

@@ -9,6 +9,8 @@
 
 The Log Compiler is a tool designed to compile log files written in a specific Markdown-like format into structured data formats, such as `JSON` or Markdown. It can also be used to create `C` + `RayGui` code. So technically, your Markdown file can be compiled and have a runtime. How cool is that?
 
+The project is currently in alpha stage of it's v1.0 (noted as v0.1), to see how the project is progressing see my [Features Checklist](TODO.md).
+
 ## Purpose
 
 The primary purpose of this tool is to assist in processing and organizing log files that follow a specific syntax. It can be used to parse and transform these files into structured formats or generate `C` + `RayGui` code for custom visualizations and technically "compile" a Markdown file.
@@ -43,7 +45,8 @@ The Log Compiler accepts the following command-line arguments:
 > This is a single line zone, and this text is its content.
 
 This is a plain text
-Wow what a text !
+Wow what a text ! \
+Wow what a second text !
 
 # Section 2
 
@@ -54,7 +57,6 @@ This is a plain text
 > And this line and the above are its content.
 
 This is a plain text
-
 ```
 
 ## Example Output files
@@ -62,41 +64,56 @@ This is a plain text
 **json :**
 ```json
 {
-    "name" : "exemple",
-    "content" : [
+    "name": "exemple",
+    "content": [
         {
-            "type" : "section",
-            "title" : "Section 1",
-            "content" : [
+            "type": "section",
+            "title": "Section 1",
+            "level": 1,
+            "content": [
                 {
-                    "type" : "block-quotes",
-                    "text" : "This is a single line zone, and this text is its content."
+                    "type": "block-quotes",
+                    "lines": [
+                        "This is a single line zone, and this text is its content."
+                    ]
                 },
                 {
-                    "type" : "plain-text",
-                    "text" : "This is a plain text Wow what a text !"
+                    "type": "plain-text",
+                    "lines": [
+                        "This is a plain text Wow what a text ! ",
+                        "Wow what a second text !"
+                    ]
                 }
             ]
         },
         {
-            "type" : "section",
-            "title" : "Section 2",
-            "content" : [
+            "type": "section",
+            "title": "Section 2",
+            "level": 1,
+            "content": [
                 {
-                    "type" : "plain-text",
-                    "text" : "This is a plain text"
+                    "type": "plain-text",
+                    "lines": [
+                        "This is a plain text"
+                    ]
                 },
                 {
-                    "type" : "section",
-                    "title" : "Subsection",
-                    "content" : [
+                    "type": "section",
+                    "title": "Subsection",
+                    "level": 2,
+                    "content": [
                         {
-                            "type" : "block-quotes",
-                            "text" : "This is a multiline zone.\nAnd this line and the above are its content."
+                            "type": "block-quotes",
+                            "lines": [
+                                "This is a multiline zone.",
+                                "And this line and the above are its content."
+                            ]
                         },
                         {
-                            "type" : "plain-text",
-                            "text" : "This is a plain text"
+                            "type": "plain-text",
+                            "lines": [
+                                "This is a plain text"
+                            ]
                         }
                     ]
                 }
@@ -126,7 +143,8 @@ while (!WindowShouldClose())
             GuiRenderText("This is a single line zone, and this text is its content.");
         GuiEndBlock();
     
-        GuiRenderText("This is a plain text Wow what a text !");
+        GuiRenderText("This is a plain text Wow what a text ! ");
+        GuiRenderTextNoPaddingTop("Wow what a second text !");                        
 
     GuiRenderTitle(1, "Section 2");
 
@@ -159,8 +177,8 @@ TitleSection        <- TitleLevel Text
 TitleLevel          <- "#" ("#" / "#" / "#" / "#" / "#" / "#")?
 Blockquote          <- BlockquoteLine+
 BlockquoteLine      <- ">" Line BlockquoteLineEnd?
-BlockquoteLineEnd   <- "\"
-Line                <- (!EndLine .)* EndLine
+SpacingChar         <- "\"
+Line                <- (!EndLine .)* SpacingChar? EndLine 
 Text                <- (!EndLine .)+
 EmptyLine           <- (" " / "\n" / "\r" / "\t")*
 EndLine             <- "\n" / "\r" / "\r\n"
@@ -181,10 +199,9 @@ In this PEG-based grammar:
   - Consists of one or more `BlockquoteLine` elements.
 - `BlockquoteLine`:
   - Starts with `>` and is followed by a `Line` of text.
-- `BlockquoteLineEnd`:
-  - A `\` character at the extact end character of a `BlockquoteLine`, represent a Newline character
 - `Line`:
   - Represents plain lines of text without special markers.
+  - A `\` character at the end character of a `Line` (before `EndLine`), represent a `SpacingChar`
 - `Text`:
   - Represents any character sequence excluding newline characters.
 - `EndLine`:

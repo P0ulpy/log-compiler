@@ -48,10 +48,10 @@ std::string TokenError(const Token &token)
 {
     std::stringstream builder;
     
-    const size_t displayedErrorPartMaxSize = 20;
-    std::string errorPart = (token.value.size() < displayedErrorPartMaxSize) 
+    constexpr size_t DisplayedErrorPartMaxSize = 20;
+    std::string errorPart = (token.value.size() < DisplayedErrorPartMaxSize) 
         ? ((token.value.empty()) ? "" : token.value) 
-        : token.value.substr(0, displayedErrorPartMaxSize);
+        : token.value.substr(0, DisplayedErrorPartMaxSize);
 
     builder
         << '`' << TokenTypeToCstr(token.type) << '`' << '\n'

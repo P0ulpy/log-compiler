@@ -14,7 +14,7 @@ public:
     enum LiteralType { String, Integer, Float, Bool };
 
 public:
-    JsonGenerator(ProgramRoot program);
+    JsonGenerator(ProgramRoot& program);
 
     const char* GetFileExtention() const final { return ".json"; }
 

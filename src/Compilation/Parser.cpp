@@ -3,9 +3,10 @@
 #include "../main.hpp"
 
 #include <iostream>
+#include <cassert>
 
-Parser::Parser(std::vector<Token> tokens)
-    : m_tokens(std::move(tokens))
+Parser::Parser(std::vector<Token>& tokens)
+    : m_tokens(tokens)
 {}
 
 ProgramRoot Parser::ParseProgram(const std::string_view& name)
@@ -32,15 +33,26 @@ const std::optional<ProgramTokenVariant> Parser::ParseNext()
 {
     if(auto textLine = TryConsume(TokenType::TextLine)) 
     {
-        TextBlockToken textBlockToken {
-            .text = textLine.value().value
-        };
+        TextBlockToken textBlockToken {};
 
-        // TODO : Add the same concept as quoteblock for line end (handle \ at end of line)
-        // \ must be handled only if the next line is not an empty line
-        while(auto subTextLine = TryConsume(TokenType::TextLine))
-        {
-            textBlockToken.text += ' ' + subTextLine.value().value;
+        textBlockToken.lines.push_back(textLine.value().value);
+
+        Token& previousToken = textLine.value();
+
+        while(const auto& subTextLine = TryConsume(TokenType::TextLine))
+        {           
+            if(previousToken.value.ends_with('\\'))
+            {
+                // remove trailing slash from prev string
+                textBlockToken.lines.back().pop_back();
+                textBlockToken.lines.push_back(subTextLine.value().value);
+            }
+            else
+            {
+                textBlockToken.lines.back().append(' ' + subTextLine.value().value);
+            }
+            
+            previousToken = subTextLine.value();
         }
 
         return textBlockToken;
@@ -84,27 +96,13 @@ const std::optional<ProgramTokenVariant> Parser::ParseNext()
     }
     else if(auto quoteLine = TryConsume(TokenType::QuoteBlockLine))
     {
-        QuoteBlockToken quoteBlockToken {
-            .text = quoteLine.value().value
-        };
+        QuoteBlockToken quoteBlockToken {};
 
-        Token& previousToken = quoteLine.value();
+        quoteBlockToken.lines.push_back(quoteLine.value().value);
 
         while(const auto& subQuoteLine = TryConsume(TokenType::QuoteBlockLine))
         {
-            auto& tk = subQuoteLine.value();
-            
-            char preLineCharacter = ' ';
-
-            if(previousToken.value.ends_with('\\'))
-            {
-                quoteBlockToken.text.pop_back();
-                preLineCharacter = '\n';
-            }
-            
-            quoteBlockToken.text += preLineCharacter + subQuoteLine.value().value;
-
-            previousToken = subQuoteLine.value();
+            quoteBlockToken.lines.push_back(subQuoteLine.value().value);
         }
 
         return quoteBlockToken;
@@ -116,23 +114,26 @@ const std::optional<ProgramTokenVariant> Parser::ParseNext()
     else
     {
         if(CompilerOptions::Debug)
-            std::cerr << "Parsing WARN : Unhandled Token, `" << Peek() << '`' << std::endl;
+            std::cerr << "Parsing WARN : Unhandled Token, `" << Peek() << '`' << '\n';
         
         Consume();
         return {};
     }
+
 }
 
 uint16_t Parser::ComputeTitleLevel(const Token& titleSymbolToken)
 {
-    uint16_t titleLevel = titleSymbolToken.value.size();
+    assert(titleSymbolToken.value.size() < std::numeric_limits<uint16_t>::max());
+    
+    uint16_t titleLevel = static_cast<uint16_t>(titleSymbolToken.value.size());
 
     if(titleLevel == 0 || titleLevel > 6)
     {
         std::cerr 
             << "Parsing ERROR : Invalid title level : `" << titleSymbolToken 
             << "` for token " << TokenError(titleSymbolToken) 
-            << std::endl;
+            << '\n';
             
         exit(EXIT_FAILURE);
     }
@@ -184,7 +185,7 @@ const std::optional<Token> Parser::MustConsume(TokenType type, const std::string
                 << errorMsg << '\n'
                 << "Expected token : `" << TokenTypeToCstr(type) << '`' << '\n'
                 << "Unexpexted token " << TokenError(token)
-                << std::endl;
+                << '\n';
         }
         else
         {
@@ -195,7 +196,7 @@ const std::optional<Token> Parser::MustConsume(TokenType type, const std::string
     {
         std::cerr 
             << errorMsg << '\n' 
-            << "Unexpected End of file : Expected `" << TokenTypeToCstr(type) << "` token" << std::endl;
+            << "Unexpected End of file : Expected `" << TokenTypeToCstr(type) << "` token" << '\n';
         exit(EXIT_FAILURE);
     }
 

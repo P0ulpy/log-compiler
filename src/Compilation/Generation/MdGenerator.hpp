@@ -11,7 +11,7 @@ class MdGeneratorVisitor;
 class MdGenerator : public Generator
 {
 public:
-    MdGenerator(ProgramRoot program);
+    MdGenerator(ProgramRoot& program);
 
     const char* GetFileExtention() const final { return ".md"; }
 

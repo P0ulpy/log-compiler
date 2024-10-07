@@ -33,7 +33,7 @@ int main(int argc, const char** argv)
         {
             std::cerr 
                 << "ERROR : Input file not found at `" << params.inputFilePath << "`\n" 
-                << ShortCLIUsageStr << std::endl;
+                << ShortCLIUsageStr << '\n';
 
             exit(EXIT_FAILURE);
         }
@@ -47,7 +47,7 @@ int main(int argc, const char** argv)
     auto fileStr = fileContent.str();
 
     if(CompilerOptions::Debug)
-        std::cout << "Starting Tokenization phase" << std::endl;
+        std::cout << "Starting Tokenization phase" << '\n';
     auto startTokenization = std::chrono::system_clock::now();
 
     Tokenizer tokenizer(fileStr);
@@ -63,14 +63,14 @@ int main(int argc, const char** argv)
             << "Tokenization ended with `" << tokens.size() << "` token(s) found in "
             << elapsedTokenizationSec.count() << "s "
             << elapsedTokenizationMs.count() << "ms"
-        << std::endl;
+        << '\n';
 
         if(CompilerOptions::Verbose)
             StdOutTokens(tokens);
     }
 
     if(CompilerOptions::Debug)
-        std::cout << "Starting Parsing phase" << std::endl;
+        std::cout << "Starting Parsing phase" << '\n';
     auto startParsing = std::chrono::system_clock::now();
 
     Parser parser(tokens);
@@ -86,14 +86,14 @@ int main(int argc, const char** argv)
             << "Parsing ended with no error in "
             << elapsedParsingSec.count() << "s "
             << elapsedParsingMs.count() << "ms"
-        << std::endl;
+        << '\n';
 
         if(CompilerOptions::Verbose)
             StdOutProgram(program);
     }
 
     if(CompilerOptions::Debug)
-        std::cout << "Stating Generation phase for `" << OutputFormatsToCstr(CompilerOptions::OutputFormat) << '`' << std::endl;
+        std::cout << "Stating Generation phase for `" << OutputFormatsToCstr(CompilerOptions::OutputFormat) << '`' << '\n';
     
     switch(CompilerOptions::OutputFormat)
     {
@@ -104,7 +104,7 @@ int main(int argc, const char** argv)
         }
         case CompilerOptions::OutputFormats::C :
         {
-            std::cerr << "ERROR : C compiler output is no implemented for now !" << std::endl;
+            std::cerr << "ERROR : C compiler output is no implemented for now !" << '\n';
             exit(1);
             break;
         }
@@ -113,7 +113,7 @@ int main(int argc, const char** argv)
             Generate<JsonGenerator>(program, params.outputFilePath);
     }
 
-    std::cout << "Genereted output at `" << params.outputFilePath << '`' << std::endl;
+    std::cout << "Genereted output at `" << params.outputFilePath << '`' << '\n';
 
     auto elapsedTotal = std::chrono::system_clock::now() - startTotal;
     auto elapsedSec = std::chrono::duration_cast<std::chrono::seconds>(elapsedTotal);
@@ -122,7 +122,7 @@ int main(int argc, const char** argv)
         << "Compiled in : "
         << elapsedSec.count()<< "s "
         << elapsedMs.count()<< "ms"
-    << std::endl;
+    << '\n';
 
     return EXIT_SUCCESS;
 }

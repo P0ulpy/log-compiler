@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-JsonGenerator::JsonGenerator(ProgramRoot program)
+JsonGenerator::JsonGenerator(ProgramRoot& program)
     : Generator(program)
 {}
 
@@ -99,10 +99,17 @@ void JsonGeneratorVisitor::operator()(const TextBlockToken &value, bool isLast)
 {
     gen.BeginObject();
 
-        gen.Field("type");
-        gen.LiteralString("plain-text");
-        gen.Field("text");
-        gen.LiteralString(value.text, false);
+        gen.Field("type"); gen.LiteralString("plain-text");
+
+        gen.Field("lines");         
+        gen.BeginTab();
+
+        for(size_t i = 0; i < value.lines.size(); ++i)
+        {
+            gen.LiteralString(value.lines[i], (i + 1 < value.lines.size()));
+        }
+
+        gen.EndTab(false);
 
     gen.EndObject(!isLast);
 }
@@ -114,8 +121,16 @@ void JsonGeneratorVisitor::operator()(const QuoteBlockToken &value, bool isLast)
 
         gen.Field("type");
         gen.LiteralString("block-quotes");
-        gen.Field("text");
-        gen.LiteralString(value.text, false);
+        
+        gen.Field("lines"); 
+        gen.BeginTab();
+
+        for(size_t i = 0; i < value.lines.size(); ++i)
+        {
+            gen.LiteralString(value.lines[i], (i + 1 < value.lines.size()));
+        }
+
+        gen.EndTab(false);
 
     gen.EndObject(!isLast);
 }
