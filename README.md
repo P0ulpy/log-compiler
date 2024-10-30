@@ -5,7 +5,7 @@
 > Imagine a world with no limits and endless possibilities. In this marvelous world, it must have a Markdown compiler, right?... right? <br>
 > Yes, I know what you're thinking: what kind of application could such a strange "compiler" have? <br>
 > It doesn't have any real-world application, this is just a fun project I created to dive into the world of compiler development.<br>
-> Don't take this project too seriously, it's intended for educational purposes. If the idea of a Markdown compiler offends you and you have a strong desire to tear your eyes out at the thought that Markdown can have some kind of runtime directly on your OS, it's normal. Stay calm and relax.
+> Don't take this project too seriously, it's intended for educational purposes. If the idea of a Markdown compiler offends you and you have a strong desire to tear your eyes out at the thought that Markdown can be compiled to a native executable and have some kind of runtime directly on your OS, it's normal. Stay calm and relax.
 
 The Log Compiler is a tool designed to compile log files written in a specific Markdown-like format into structured data formats, such as `JSON` or Markdown. It can also be used to create `C` + `RayGui` code. So technically, your Markdown file can be compiled and have a runtime. How cool is that?
 
