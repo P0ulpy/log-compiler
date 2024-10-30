@@ -7,9 +7,9 @@
 > It doesn't have any real-world application, this is just a fun project I created to dive into the world of compiler development.<br>
 > Don't take this project too seriously, it's intended for educational purposes. If the idea of a Markdown compiler offends you and you have a strong desire to tear your eyes out at the thought that Markdown can be compiled to a native executable and have some kind of runtime directly on your OS, it's normal. Stay calm and relax.
 
-The Log Compiler is a tool designed to compile log files written in a specific Markdown-like format into structured data formats, such as `JSON` or Markdown. It can also be used to create `C` + `RayGui` code. So technically, your Markdown file can be compiled and have a runtime. How cool is that?
+The Log Compiler is a tool designed to parse log files written in a specific Markdown-like format into structured data formats, such as `JSON`. It can also be used to create `C` + `RayGui` code. So technically, your Markdown file can be compiled and have a runtime and it is also a *reversible compiler* (means it can output source code from his internal representation). How cool is that ?
 
-The project is currently in alpha stage of it's v1.0 (noted as v0.1), to see how the project is progressing see my [Features Checklist](TODO.md).
+The project is currently in alpha stage of it's v1.1 (noted as v0.1.1-alpha), to see how the project is progressing see my [Features Checklist](TODO.md).
 
 ## Purpose
 
