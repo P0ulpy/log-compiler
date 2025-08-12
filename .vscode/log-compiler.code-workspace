@@ -19,7 +19,7 @@
 				"request": "launch",
 				"preLaunchTask": "CMake build Debug",
 				"program": "${workspaceFolder}/out/Debug/Debug/log-compiler.exe",
-				"args": [ "out/input.md", "-o", "out/out.json", "--debug", "--verbose" ],
+				"args": [ "out/input.md", "--render", "--debug", "--verbose" ],
 				"cwd": "${workspaceFolder}",
 				// "environment": [
 				// 	{
@@ -225,7 +225,23 @@
 			"xtr1common": "cpp",
 			"xtree": "cpp",
 			"xutility": "cpp",
-			"iomanip": "cpp"
+			"iomanip": "cpp",
+			"chrono": "cpp",
+			"variant": "cpp",
+			"charconv": "cpp",
+			"format": "cpp",
+			"forward_list": "cpp",
+			"locale": "cpp",
+			"mutex": "cpp",
+			"optional": "cpp",
+			"ratio": "cpp",
+			"regex": "cpp",
+			"stop_token": "cpp",
+			"thread": "cpp",
+			"xlocbuf": "cpp",
+			"xlocmes": "cpp",
+			"xlocmon": "cpp",
+			"xloctime": "cpp"
 		},
 		"C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
 		"C_Cpp_Runner.cCompilerPath": "gcc",

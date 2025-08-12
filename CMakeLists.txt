@@ -13,3 +13,13 @@ file(GLOB_RECURSE SOURCES
 )
 
 add_executable (${TARGET_NAME} ${SOURCES})
+
+include(third-party/third-party.cmake)
+
+target_link_libraries(${TARGET_NAME} 
+    PRIVATE ${RAYLIB_LIB}
+)
+
+target_include_directories(${TARGET_NAME}
+    PRIVATE ${RAYGUI_INCLUDE}
+)
