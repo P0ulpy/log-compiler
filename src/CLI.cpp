@@ -19,7 +19,7 @@ const char* OutputFormatsToCstr(CompilerOptions::OutputFormats tokenType)
 
 void StdOutInputFileInfo(const std::string_view& inputFilePath, const std::stringstream& fileContent)
 {
-    std::cout 
+    std::cout
         << "Input file : " << inputFilePath
         << std::endl;
 }
@@ -40,19 +40,19 @@ void StdOutProgram(const ProgramRoot& program)
     std::cout << "Program tokens : \n";
     for(auto& tokenVariant : program.content)
     {
-        std::visit([](auto&& token) 
-        { 
+        std::visit([](auto&& token)
+        {
             using Type = std::decay_t<decltype(token)>;
 
-            if constexpr (!std::is_same_v<NodeToken, Type>) 
+            if constexpr (!std::is_same_v<NodeToken, Type>)
             {
-                std::cout << "    " << token << '\n'; 
+                std::cout << "    " << token << '\n';
             }
             else
             {
-                std::cout << token << '\n'; 
+                std::cout << token << '\n';
             }
-        }, 
+        },
         tokenVariant);
     }
 
@@ -60,21 +60,24 @@ void StdOutProgram(const ProgramRoot& program)
 }
 
 ParsedCLIParameters ProcessCLIArgs(int argc, const char** argv)
-{    
+{
     InputParser inputParser(argc, argv);
 
     if(inputParser.CmdOptionExists("--help") || inputParser.CmdOptionExists("-h"))
     {
-        std::cout 
-            << ShortCLIUsageStr << '\n' 
-            << CompleteCLIUsageStr 
+        std::cout
+            << ShortCLIUsageStr << '\n'
+            << CompleteCLIUsageStr
             << std::endl;
         exit(EXIT_SUCCESS);
     }
 
     if(inputParser.CmdOptionExists("--version") || inputParser.CmdOptionExists("-v"))
     {
-        std::cout << "LogCompiler " << 'v' << VERSION_MAJOR << '.' << VERSION_MINOR << '.' << VERSION_PATCH << '-' << VERSION_TYPE << std::endl;
+        std::cout 
+            << "LogCompiler " << 'v' << LOG_COMPILER_VERSION_MAJOR << '.' << LOG_COMPILER_VERSION_MINOR << '.' << LOG_COMPILER_VERSION_PATCH << '-' << LOG_COMPILER_VERSION_NAME 
+            << '\n' << "Git rev: " << LOG_COMPILER_GIT_COMMIT_HASH
+        << std::endl;
         exit(EXIT_SUCCESS);
     }
 
@@ -88,7 +91,7 @@ ParsedCLIParameters ProcessCLIArgs(int argc, const char** argv)
     ParsedCLIParameters params;
     params.inputFilePath = inputParser[0];
 
-    if(inputParser.CmdOptionExists("--debug"))
+    if(inputParser.CmdOptionExists("--debug") || inputParser.CmdOptionExists("-d"))
     {
         CompilerOptions::Debug = true;
         std::cout << "You are un debug mode" << std::endl;
@@ -109,7 +112,7 @@ ParsedCLIParameters ProcessCLIArgs(int argc, const char** argv)
         auto format = inputParser.GetCmdOptions("--format", "-f");
         std::transform(format.begin(), format.end(), format.begin(),
             [](unsigned char c){ return std::tolower(c); });
-        
+
         if(format == "json")
             CompilerOptions::OutputFormat = CompilerOptions::OutputFormats::JSON;
         else if(format == "markdown" || format == "md")
@@ -118,13 +121,18 @@ ParsedCLIParameters ProcessCLIArgs(int argc, const char** argv)
             CompilerOptions::OutputFormat = CompilerOptions::OutputFormats::C;
         else
         {
-            std::cerr 
+            std::cerr
                 << "ERROR : invalid --format `" << format << "` is not a valid format. "
                 << "Accepted formats are [json|(markdown|md)|c]\n"
                 << ShortCLIUsageStr << std::endl;
-                
+
             exit(EXIT_FAILURE);
         }
+    }
+
+    if(inputParser.CmdOptionExists("--render") || inputParser.CmdOptionExists("-r"))
+    {
+        CompilerOptions::RenderMode = true;
     }
 
     if(CompilerOptions::Verbose)
