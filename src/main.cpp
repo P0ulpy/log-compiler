@@ -8,12 +8,13 @@
 #include "Compilation/Parser.hpp"
 #include "Compilation/Generation/JsonGenerator.hpp"
 #include "Compilation/Generation/MdGenerator.hpp"
+#include "Compilation/RenderMode/RenderModeGui.hpp"
 
 #include <chrono>
 
-bool CompilerOptions::Debug = false;
-bool CompilerOptions::Verbose = false;
-CompilerOptions::OutputFormats CompilerOptions::OutputFormat = CompilerOptions::OutputFormats::JSON;
+#include <raylib.h>
+#define RAYGUI_IMPLEMENTATION
+#include <raygui.h>
 
 template <class TGenerator>
 requires(std::is_base_of_v<Generator, TGenerator>)
@@ -28,11 +29,11 @@ int main(int argc, const char** argv)
     std::stringstream fileContent;
     {
         std::fstream file(params.inputFilePath, std::ios::in);
-        
+
         if(!file.is_open())
         {
-            std::cerr 
-                << "ERROR : Input file not found at `" << params.inputFilePath << "`\n" 
+            std::cerr
+                << "ERROR : Input file not found at `" << params.inputFilePath << "`\n"
                 << ShortCLIUsageStr << '\n';
 
             exit(EXIT_FAILURE);
@@ -59,7 +60,7 @@ int main(int argc, const char** argv)
         auto elapsedTokenizationSec = std::chrono::duration_cast<std::chrono::seconds>(elapsedTokenization);
         auto elapsedTokenizationMs = std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTokenization) - elapsedTokenizationSec;
 
-        std::cout 
+        std::cout
             << "Tokenization ended with `" << tokens.size() << "` token(s) found in "
             << elapsedTokenizationSec.count() << "s "
             << elapsedTokenizationMs.count() << "ms"
@@ -75,14 +76,14 @@ int main(int argc, const char** argv)
 
     Parser parser(tokens);
     auto program = parser.ParseProgram();
-    
+
     if(CompilerOptions::Debug)
     {
         auto elapsedParsing = std::chrono::system_clock::now() - startParsing;
         auto elapsedParsingSec = std::chrono::duration_cast<std::chrono::seconds>(elapsedParsing);
         auto elapsedParsingMs = std::chrono::duration_cast<std::chrono::milliseconds>(elapsedParsing) - elapsedParsingSec;
 
-        std::cout 
+        std::cout
             << "Parsing ended with no error in "
             << elapsedParsingSec.count() << "s "
             << elapsedParsingMs.count() << "ms"
@@ -92,9 +93,18 @@ int main(int argc, const char** argv)
             StdOutProgram(program);
     }
 
+    if(CompilerOptions::RenderMode)
+    {
+        if(CompilerOptions::Debug)
+            std::cout << "Starting Render Mode\n";
+
+        RenderMode(program);
+        return EXIT_SUCCESS;
+    }
+
     if(CompilerOptions::Debug)
         std::cout << "Stating Generation phase for `" << OutputFormatsToCstr(CompilerOptions::OutputFormat) << '`' << '\n';
-    
+
     switch(CompilerOptions::OutputFormat)
     {
         case CompilerOptions::OutputFormats::Markdown :
@@ -123,6 +133,7 @@ int main(int argc, const char** argv)
         << elapsedSec.count()<< "s "
         << elapsedMs.count()<< "ms"
     << '\n';
+
 
     return EXIT_SUCCESS;
 }

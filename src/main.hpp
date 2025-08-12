@@ -8,6 +8,10 @@
 #define LOG_COMPILER_VERSION_PATCH 1
 #define LOG_COMPILER_VERSION_NAME "alpha"
 
+#ifndef LOG_COMPILER_GIT_COMMIT_HASH // Comes from the build system
+    #define LOG_COMPILER_GIT_COMMIT_HASH "Unknow"
+#endif
+
 struct CompilerOptions
 {
     static inline bool Debug = false;

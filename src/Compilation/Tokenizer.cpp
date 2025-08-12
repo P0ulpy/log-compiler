@@ -11,9 +11,9 @@ Tokenizer::Tokenizer(std::string source)
 std::vector<Token> Tokenizer::Tokenize()
 {
     std::vector<Token> tokens;
-    
+
     uint32_t lineIndex = 1;
-    
+
     while (CanPeek())
     {
         std::string line = Consume();
@@ -30,7 +30,7 @@ std::vector<Token> Tokenizer::Tokenize()
             // Skip Multiple empty line
             if(tokens.size() > 0 && tokens.back().type == TokenType::EmptyLine)
                 continue;
-            
+
             tokens.push_back({
                 .type = TokenType::EmptyLine,
                 .ln = lineIndex,
@@ -71,7 +71,7 @@ std::vector<Token> Tokenizer::Tokenize()
                 .col = 1U,
             });
         }
-        
+
         ++lineIndex;
     }
 
@@ -96,7 +96,7 @@ bool Tokenizer::TryPeek(std::string &line) const
     {
         line = m_source.substr(m_cursor, lineEndIndex - m_cursor);
     }
-    else 
+    else
     {
         // This handles the last line
         line = m_source.substr(m_cursor);
@@ -107,16 +107,16 @@ bool Tokenizer::TryPeek(std::string &line) const
 
 std::string Tokenizer::Consume()
 {
-    auto endOfLineInfo = FindEndOfLine(m_cursor);
-    
+    auto [ index, terminatorOffset ] = FindEndOfLine(m_cursor);
+
     std::string out;
 
-    if (endOfLineInfo.index != std::string::npos)
+    if (index != std::string::npos)
     {
-        out = m_source.substr(m_cursor, endOfLineInfo.index - m_cursor);
-        m_cursor = endOfLineInfo.index + endOfLineInfo.terminatorOffset;
-    } 
-    else 
+        out = m_source.substr(m_cursor, index - m_cursor);
+        m_cursor = index + terminatorOffset;
+    }
+    else
     {
         out = m_source.substr(m_cursor);
         m_cursor = m_source.size();
@@ -125,15 +125,15 @@ std::string Tokenizer::Consume()
     return out;
 }
 
-Tokenizer::EndOfLineInfo Tokenizer::FindEndOfLine(size_t startPos) const
+Tokenizer::EolInfo Tokenizer::FindEndOfLine(size_t startPos) const
 {
     size_t length = m_source.length();
-    
-    for (size_t i = startPos; i < length; ++i) 
+
+    for (size_t i = startPos; i < length; ++i)
     {
         char character = m_source[i];
 
-        if (character == '\n' || character == '\r') 
+        if (character == '\n' || character == '\r')
         {
             if (character == '\r' && (i + 1 < length) && m_source[i + 1] == '\n')
                 return { i, 2 };
