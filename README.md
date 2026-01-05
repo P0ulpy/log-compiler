@@ -25,7 +25,7 @@ For more information on how to use the Log Compiler, refer to the project's docu
 
 The Log Compiler accepts the following command-line arguments:
 
-**Usage :** `log-compiler InputFile [-o outputFile] [--format json|(markdown|md)|c] [--verbose] [--debug] [-v] [-h]`
+**Usage :** `log-compiler InputFile [--output outputFile] [--format json|(markdown|md)|c] [--render] [--version] [--help] [--verbose] [--debug]`
 
 **Positional arguments:**
 - `InputFile`         : Specifies the input log file to be compiled.
@@ -33,9 +33,9 @@ The Log Compiler accepts the following command-line arguments:
 **Optional arguments:**
 - `-o`, `--output`    : Specifies the output file path (default=./a.{format}).
 - `-f`, `--format`    : Specifies the output format as `JSON`, `Markdown` or `C + RayGui` format : `[json|(markdown|md)|c]` (default=json).
-- `--verbose`         : Enables verbose mode for detailed output.
-- `--debug`           : Enables debug mode for debugging information.
 - `-v`, `--version`   : display compiler version, then exit.
+- `--verbose`         : Enables verbose mode for detailed output.
+- `-d`, `--debug`     : Enables debug mode for debugging information.
 - `-h`, `--help`      : display this message, then exit.
 
 ## Exemple Input File
@@ -138,13 +138,13 @@ while (!WindowShouldClose())
     BeginDrawing();
 
     GuiRenderTitle(1, "Section 1");
-    
+
         GuiBeginBlock();
             GuiRenderText("This is a single line zone, and this text is its content.");
         GuiEndBlock();
-    
+
         GuiRenderText("This is a plain text Wow what a text ! ");
-        GuiRenderTextNoPaddingTop("Wow what a second text !");                        
+        GuiRenderTextNoPaddingTop("Wow what a second text !");
 
     GuiRenderTitle(1, "Section 2");
 
@@ -178,7 +178,7 @@ TitleLevel          <- "#" ("#" / "#" / "#" / "#" / "#" / "#")?
 Blockquote          <- BlockquoteLine+
 BlockquoteLine      <- ">" Line BlockquoteLineEnd?
 SpacingChar         <- "\"
-Line                <- (!EndLine .)* SpacingChar? EndLine 
+Line                <- (!EndLine .)* SpacingChar? EndLine
 Text                <- (!EndLine .)+
 EmptyLine           <- (" " / "\n" / "\r" / "\t")*
 EndLine             <- "\n" / "\r" / "\r\n"

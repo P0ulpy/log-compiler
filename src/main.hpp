@@ -3,18 +3,23 @@
 #include <cstdint>
 #include <memory>
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
-#define VERSION_PATCH 1
-#define VERSION_TYPE "alpha"
+#define LOG_COMPILER_VERSION_MAJOR 0
+#define LOG_COMPILER_VERSION_MINOR 1
+#define LOG_COMPILER_VERSION_PATCH 1
+#define LOG_COMPILER_VERSION_NAME "alpha"
+
+#ifndef LOG_COMPILER_GIT_COMMIT_HASH // Comes from the build system
+    #define LOG_COMPILER_GIT_COMMIT_HASH "Unknow"
+#endif
 
 struct CompilerOptions
 {
-    static bool Debug;
-    static bool Verbose;
+    static inline bool Debug = false;
+    static inline bool Verbose = false;
+    static inline bool RenderMode = false;
 
     enum class OutputFormats { JSON, Markdown, C };
-    static OutputFormats OutputFormat;
+    static inline OutputFormats OutputFormat = OutputFormats::JSON;
 };
 
 template<typename T>
