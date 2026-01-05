@@ -2,6 +2,7 @@
 
 #include <string>
 #include <ostream>
+#include <cstdint>
 
 /** TODO :
  * Add end of line concept of handle `<br>` and `\` at end of a text line 

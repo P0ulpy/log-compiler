@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Token.hpp"
+#include <cstdint>
 
 class Tokenizer
 {

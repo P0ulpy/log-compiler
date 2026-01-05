@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <optional>
+#include <cstdint>
 
 #include "Token.hpp"
 #include "ProgramTokens.hpp"

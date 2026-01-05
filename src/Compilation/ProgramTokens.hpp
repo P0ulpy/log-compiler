@@ -3,6 +3,7 @@
 #include <vector>
 #include <variant>
 #include <ostream>
+#include <cstdint>
 
 #include "../Utils/TypeList.hpp"
 #include "../Utils/StringUtils.hpp"
