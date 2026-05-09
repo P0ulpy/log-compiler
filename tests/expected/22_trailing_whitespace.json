@@ -1,0 +1,1 @@
+{"name":"program","content":[{"type":"section","title":"Trailing Whitespace","level":1,"content":[{"type":"plain-text","lines":[{"elements":[{"type":"text","value":"Text with trailing spaces More text here."}]}]},{"type":"block-quotes","lines":[{"elements":[{"type":"text","value":"Quote with trailing"}]},{"elements":[{"type":"text","value":"Another quote line"}]}]}]}]}

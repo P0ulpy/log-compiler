@@ -1,0 +1,7 @@
+# Escaped Links
+This is not a link: \[text\](url)
+
+But [this is](http://real.com) a link.
+
+Partial escape: \[not a link\](but has parens)
+

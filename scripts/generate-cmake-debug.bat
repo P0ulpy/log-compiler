@@ -1,1 +1,0 @@
-cmake -S %~dp0../ -B %~dp0../out/Debug -DCMAKE_BUILD_TYPE=Debug

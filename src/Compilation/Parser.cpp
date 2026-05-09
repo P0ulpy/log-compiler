@@ -28,101 +28,139 @@ ProgramRoot Parser::ParseProgram(const std::string_view& name)
     return rootNode;
 }
 
-/** TODO :
- * Introduce some kind of a visitor for TryConsume() like in Generation 
-*/
 const std::optional<ProgramTokenVariant> Parser::ParseNext()
 {
-    if(auto textLine = TryConsume(TokenType::TextLine)) 
-    {
-        TextBlockToken textBlockToken {};
-
-        textBlockToken.lines.push_back(textLine.value().value);
-
-        Token& previousToken = textLine.value();
-
-        while(const auto& subTextLine = TryConsume(TokenType::TextLine))
-        {           
-            if(previousToken.value.ends_with('\\'))
-            {
-                // remove trailing slash from prev string
-                textBlockToken.lines.back().pop_back();
-                textBlockToken.lines.push_back(subTextLine.value().value);
-            }
-            else
-            {
-                textBlockToken.lines.back().append(' ' + subTextLine.value().value);
-            }
-            
-            previousToken = subTextLine.value();
-        }
-
-        return textBlockToken;
-    }
-    else if(auto titleSymbolOpt = TryConsume(TokenType::TitleSymbol))
-    {
-        // Title token
-
-        uint16_t titleLevel = ComputeTitleLevel(titleSymbolOpt.value());
-
-        TitleToken titleToken {
-            .level = titleLevel
-        };
-
-        auto textLiteral = MustConsume(TokenType::TextLiteral);
-        titleToken.text = textLiteral.value().value;
-
-        // Content tokens
-
-        NodeToken nodeToken {
-            .title = titleToken
-        };
-
-        while(CanPeek())
-        {
-            if(auto titleSymbolOpt = TryPeek(TokenType::TitleSymbol))
-            {
-                uint16_t innerTitleLevel = ComputeTitleLevel(titleSymbolOpt.value());
-
-                if(innerTitleLevel <= titleLevel)
-                    return nodeToken;
-            }
-
-            if(auto programTokenOtp = ParseNext())
-            {
-                nodeToken.content.push_back(programTokenOtp.value());
-            }
-        }
-
-        return nodeToken;
-    }
-    else if(auto quoteLine = TryConsume(TokenType::QuoteBlockLine))
-    {
-        QuoteBlockToken quoteBlockToken {};
-
-        quoteBlockToken.lines.push_back(quoteLine.value().value);
-
-        while(const auto& subQuoteLine = TryConsume(TokenType::QuoteBlockLine))
-        {
-            quoteBlockToken.lines.push_back(subQuoteLine.value().value);
-        }
-
-        return quoteBlockToken;
-    }
-    else if(auto emptyLine = TryConsume(TokenType::EmptyLine))
-    {
+    if(!CanPeek())
         return {};
-    }
-    else
+
+    ParserTokenVisitor visitor(*this);
+    Token current = Peek();
+
+    switch(current.type)
     {
-        if(CompilerOptions::Debug)
-            std::cerr << "Parsing WARN : Unhandled Token, `" << Peek() << '`' << '\n';
-        
-        Consume();
-        return {};
+        case TokenType::TextLine:       return visitor.operator()<TokenType::TextLine>();
+        case TokenType::TitleSymbol:    return visitor.operator()<TokenType::TitleSymbol>();
+        case TokenType::QuoteBlockLine: return visitor.operator()<TokenType::QuoteBlockLine>();
+        case TokenType::EmptyLine:      return visitor.operator()<TokenType::EmptyLine>();
+        case TokenType::TextLiteral:    return visitor.operator()<TokenType::TextLiteral>();
+        default: _STL_UNREACHABLE;
     }
 
+    if(CompilerOptions::Debug)
+        std::cerr << "Parsing WARN : Unhandled Token, `" << Peek() << '`' << '\n';
+    
+    Consume();
+    return {};
 }
+
+// --- ParserTokenVisitor specializations ---
+
+ParserTokenVisitor::ParserTokenVisitor(Parser& parser)
+    : m_parser(parser)
+{}
+
+template <>
+std::optional<ProgramTokenVariant> ParserTokenVisitor::operator()<TokenType::TextLine>()
+{
+    auto textLine = m_parser.TryConsume(TokenType::TextLine);
+    if(!textLine) return {};
+
+    TextBlockToken textBlockToken {};
+
+    std::string currentLineText = textLine.value().value;
+
+    while(const auto& subTextLine = m_parser.TryConsume(TokenType::TextLine))
+    {           
+        if(currentLineText.ends_with('\\'))
+        {
+            // Backslash at end of line = line break
+            currentLineText.pop_back();
+            textBlockToken.lines.push_back(ParseInlineContent(currentLineText));
+            currentLineText = subTextLine.value().value;
+        }
+        else
+        {
+            currentLineText.append(' ' + subTextLine.value().value);
+        }
+    }
+
+    textBlockToken.lines.push_back(ParseInlineContent(currentLineText));
+    return textBlockToken;
+}
+
+template <>
+std::optional<ProgramTokenVariant> ParserTokenVisitor::operator()<TokenType::TitleSymbol>()
+{
+    auto titleSymbolOpt = m_parser.TryConsume(TokenType::TitleSymbol);
+    if(!titleSymbolOpt) return {};
+
+    uint16_t titleLevel = m_parser.ComputeTitleLevel(titleSymbolOpt.value());
+
+    TitleToken titleToken {
+        .level = titleLevel
+    };
+
+    auto textLiteral = m_parser.MustConsume(TokenType::TextLiteral);
+    titleToken.text = textLiteral.value().value;
+
+    // Content tokens
+    NodeToken nodeToken {
+        .title = titleToken
+    };
+
+    while(m_parser.CanPeek())
+    {
+        if(auto titleSymbolOpt = m_parser.TryPeek(TokenType::TitleSymbol))
+        {
+            uint16_t innerTitleLevel = m_parser.ComputeTitleLevel(titleSymbolOpt.value());
+
+            if(innerTitleLevel <= titleLevel)
+                return nodeToken;
+        }
+
+        if(auto programTokenOtp = m_parser.ParseNext())
+        {
+            nodeToken.content.push_back(programTokenOtp.value());
+        }
+    }
+
+    return nodeToken;
+}
+
+template <>
+std::optional<ProgramTokenVariant> ParserTokenVisitor::operator()<TokenType::QuoteBlockLine>()
+{
+    auto quoteLine = m_parser.TryConsume(TokenType::QuoteBlockLine);
+    if(!quoteLine) return {};
+
+    QuoteBlockToken quoteBlockToken {};
+
+    quoteBlockToken.lines.push_back(ParseInlineContent(quoteLine.value().value));
+
+    while(const auto& subQuoteLine = m_parser.TryConsume(TokenType::QuoteBlockLine))
+    {
+        quoteBlockToken.lines.push_back(ParseInlineContent(subQuoteLine.value().value));
+    }
+
+    return quoteBlockToken;
+}
+
+template <>
+std::optional<ProgramTokenVariant> ParserTokenVisitor::operator()<TokenType::EmptyLine>()
+{
+    (void)m_parser.TryConsume(TokenType::EmptyLine);
+    return {};
+}
+
+template <>
+std::optional<ProgramTokenVariant> ParserTokenVisitor::operator()<TokenType::TextLiteral>()
+{
+    // TextLiteral appearing outside of a title context — skip it
+    (void)m_parser.Consume();
+    return {};
+}
+
+// --- Parser utility methods ---
 
 uint16_t Parser::ComputeTitleLevel(const Token& titleSymbolToken)
 {

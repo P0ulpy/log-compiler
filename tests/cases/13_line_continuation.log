@@ -1,0 +1,8 @@
+# Line Continuation
+
+This is a long line that\
+should break into two lines.
+
+Another paragraph that\
+has a\
+triple continuation.

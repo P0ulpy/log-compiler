@@ -29,9 +29,13 @@
     - [x] Text
     - [x] EmptyLine
     - [x] EndLine
+- [ ] Gramar enhancement
+    - [ ] make `\` beeing an escaping character insteed of a hard coded behaviour
+    - [ ] Support links 
 - [ ] Code enhancement
     - [ ] Generalize visitor patern to Parsing and tokenization phase
 - [ ] Testing
+    - [ ] Implement a simple testing system similar to tsoding/b
     - [ ] Input file
     - [ ] Parsing
     - [ ] Tokenization

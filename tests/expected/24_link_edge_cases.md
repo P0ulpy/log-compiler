@@ -1,0 +1,13 @@
+# Link Edge Cases
+Empty label: [](http://example.com)
+
+Empty url: [label]()
+
+Link with spaces in label: [my cool label](http://test.com)
+
+Link with path: [docs](/path/to/page)
+
+Link with fragment: [section](http://test.com#section-1)
+
+Link with query: [search](http://test.com?q=hello&lang=en)
+

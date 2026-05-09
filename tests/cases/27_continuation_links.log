@@ -1,0 +1,7 @@
+# Continuation with Links
+
+This has a [link](http://a.com) and\
+continues on the next line with [another](http://b.com).
+
+Simple continuation\
+without links.

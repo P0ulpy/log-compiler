@@ -1,0 +1,9 @@
+# Escaped in Links
+
+Link with escaped bracket in label: [label \] end](http://test.com)
+
+Link with escaped paren in url: [click](http://test.com/path\))
+
+Link with hash in label: [section \#1](http://test.com)
+
+Link with escape in both: [my \[label\]](http://example.com/\(page\))

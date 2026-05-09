@@ -38,6 +38,8 @@ private:
     void LiteralFloating(double value, bool comma = true);
     void LiteralBoolean(bool value, bool comma = true);
 
+    void WriteInlineElements(const RichTextLine& line);
+
     friend class JsonGeneratorVisitor;
 };
 

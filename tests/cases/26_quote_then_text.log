@@ -1,0 +1,10 @@
+# Quote Then Text
+
+> First quote block
+> Second line
+
+Immediate text after.
+
+> Another quote
+
+> Non-adjacent quote (separated by empty line above)

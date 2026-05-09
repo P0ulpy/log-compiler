@@ -7,12 +7,11 @@
 
 #include "../Utils/TypeList.hpp"
 #include "../Utils/StringUtils.hpp"
-
-using TextLine = std::string;
+#include "InlineContent.hpp"
 
 struct TextBlockToken
 {
-    std::vector<TextLine> lines;
+    std::vector<RichTextLine> lines;
 };
 
 std::ostream& operator<<(std::ostream& os, const TextBlockToken& token);
@@ -22,14 +21,14 @@ std::ostream& operator<<(std::ostream& os, const TextBlockToken& token);
 struct TitleToken
 {
     uint16_t level = 0;
-    TextLine text;
+    std::string text;
 };
 
 std::ostream& operator<<(std::ostream& os, const TitleToken& token);
 
 struct QuoteBlockToken
 {
-    std::vector<TextLine> lines;
+    std::vector<RichTextLine> lines;
 };
 
 std::ostream& operator<<(std::ostream& os, const QuoteBlockToken& token);

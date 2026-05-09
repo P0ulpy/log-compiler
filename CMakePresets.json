@@ -1,0 +1,65 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "debug",
+            "displayName": "Debug",
+            "binaryDir": "${sourceDir}/out/Debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release",
+            "binaryDir": "${sourceDir}/out/Release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug",
+            "displayName": "Build Debug",
+            "configurePreset": "debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "release",
+            "displayName": "Build Release",
+            "configurePreset": "release",
+            "configuration": "Release"
+        },
+        {
+            "name": "tests",
+            "displayName": "Build Tests",
+            "configurePreset": "debug",
+            "configuration": "Debug",
+            "targets": ["log-compiler-tests"]
+        },
+        {
+            "name": "coverage",
+            "displayName": "Run Code Coverage",
+            "configurePreset": "debug",
+            "configuration": "Debug",
+            "targets": ["coverage"]
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "default",
+            "displayName": "Run All Tests",
+            "configurePreset": "debug",
+            "configuration": "Debug",
+            "output": {
+                "outputOnFailure": true
+            }
+        }
+    ]
+}

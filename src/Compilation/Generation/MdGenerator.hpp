@@ -18,12 +18,16 @@ public:
     const std::stringstream& Generate() final;
 
 private: 
-    void ProcesssProgramContent(const NodeContent& content);
+    void ProcessProgramContent(const NodeContent& content);
     void Append(const std::string_view& value);
     void AppendLine(const std::string_view& value);
     void AppendBlock(const std::string_view& value);
+    void WriteInlineLine(const RichTextLine& line);
 
-private:
+    static std::string EscapePlainText(const std::string& text);
+    static std::string EscapeLinkLabel(const std::string& label);
+    static std::string EscapeLinkUrl(const std::string& url);
+
     friend class MdGeneratorVisitor;
 };
 

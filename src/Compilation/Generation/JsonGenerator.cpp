@@ -69,6 +69,34 @@ void JsonGenerator::LiteralBoolean(bool value, bool comma)
     HasComma(comma);
 }
 
+void JsonGenerator::WriteInlineElements(const RichTextLine& line)
+{
+    for (size_t i = 0; i < line.size(); ++i)
+    {
+        bool elemLast = (i + 1) >= line.size();
+
+        std::visit([&](auto&& elem)
+        {
+            using Type = std::decay_t<decltype(elem)>;
+            if constexpr (std::is_same_v<Type, PlainText>)
+            {
+                BeginObject();
+                    Field("type"); LiteralString("text");
+                    Field("value"); LiteralString(elem.text, false);
+                EndObject(!elemLast);
+            }
+            else if constexpr (std::is_same_v<Type, LinkInline>)
+            {
+                BeginObject();
+                    Field("type"); LiteralString("link");
+                    Field("label"); LiteralString(elem.label);
+                    Field("url"); LiteralString(elem.url, false);
+                EndObject(!elemLast);
+            }
+        }, line[i]);
+    }
+}
+
 JsonGeneratorVisitor::JsonGeneratorVisitor(JsonGenerator& generator)
     : gen(generator)
 {}
@@ -106,7 +134,12 @@ void JsonGeneratorVisitor::operator()(const TextBlockToken &value, bool isLast)
 
         for(size_t i = 0; i < value.lines.size(); ++i)
         {
-            gen.LiteralString(value.lines[i], (i + 1 < value.lines.size()));
+            gen.BeginObject();
+                gen.Field("elements");
+                gen.BeginTab();
+                    gen.WriteInlineElements(value.lines[i]);
+                gen.EndTab(false);
+            gen.EndObject(i + 1 < value.lines.size());
         }
 
         gen.EndTab(false);
@@ -127,7 +160,12 @@ void JsonGeneratorVisitor::operator()(const QuoteBlockToken &value, bool isLast)
 
         for(size_t i = 0; i < value.lines.size(); ++i)
         {
-            gen.LiteralString(value.lines[i], (i + 1 < value.lines.size()));
+            gen.BeginObject();
+                gen.Field("elements");
+                gen.BeginTab();
+                    gen.WriteInlineElements(value.lines[i]);
+                gen.EndTab(false);
+            gen.EndObject(i + 1 < value.lines.size());
         }
 
         gen.EndTab(false);
